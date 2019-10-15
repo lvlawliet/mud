@@ -3,19 +3,28 @@ import Enemy      from './npc/enemy'
 import BackGround from './runtime/background'
 import GameInfo   from './runtime/gameinfo'
 import Music      from './runtime/music'
-import DataBus    from './databus'
+import DataBus from './databus'
+import SkillBus from './skillbus'
+import actorimp from './actorimp'
+import template from './template'
 
-let ctx  = canvas.getContext('2d')
+import { canvasTextAutoLine, canvasTextRight, canvasTextCenter } from './util/utilf'
+
+let ctx = canvas.getContext('2d')
+let usedata = new DataBus()
+let skilldata = new SkillBus()
+let tx = canvas.width * 1 / 12
+let tempman = new template()
 
 /**
  * 游戏主函数
  */
 export default class Main {
-  constructor(e) {
+  constructor() {
     // init background color
     ctx.font = "14px Georgia";
     ctx.fillStyle = '#FFFFFF'
-    this.playername = e.nickName
+    this.playername = usedata.getdata('name')
     this.bindLoop = this.loop.bind(this)
     this.x = 0
     this.y = 0
@@ -23,14 +32,17 @@ export default class Main {
       this.bindLoop,
       canvas
     )
-    this.battledata = ["战斗记录:\r\n"]
-    this.skills = [
-      { name: "剑一·破", x: 35, y: canvas.height - 120, damage: 1 },
-      { name: "回鸿十字引", x: canvas.width / 2, y: canvas.height - 120, damage: 10 },
-      { name: "八烟天剑吾为锋", x: 35, y: canvas.height - 60, damage: 20 },
-      { name: "一式留神 ", x: canvas.width / 2, y: canvas.height - 60, damage: 35 }
+    this.battledata = []
+    this.skillspos = [
+      { x: canvas.width * 1 / 12, y: canvas.height - 120 },
+      { x: canvas.width / 2 + canvas.width * 1 / 12, y: canvas.height - 120 },
+      { x: canvas.width * 1 / 12, y: canvas.height - 60 },
+      { x: canvas.width / 2 + canvas.width * 1 / 12, y: canvas.height - 60 }
                   ]
     this.initEvent()
+    this.playerA = new actorimp(0, usedata)
+    this.playerB = new actorimp(1, tempman.npc[0])
+    console.log(this.playerB)
   }
 
   initEvent(){
@@ -47,27 +59,39 @@ export default class Main {
     }).bind(this))
 
     wx.onTouchEnd(((e) => {
-      console.log(this.x, this.y)
-      /*
-      this.battledata.push(this.x + " " + this.y)
-      while (this.battledata.length > 14) {
-        this.battledata.shift()
-      }
-      */
       this.checkskill(this.x, this.y)
     }).bind(this))
   }
 
   //check skill
   checkskill( x, y) {
-    for (var i = 0; i < this.skills.length; i++) {
-      let tmpx = this.skills[i].x
-      let tmpy = this.skills[i].y
+    for (var i = 0; i < usedata.activeskills.length; i++) {
+      let tmpx = this.skillspos[i].x
+      let tmpy = this.skillspos[i].y
       if ( x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30 ){
+        /*
         this.battledata.push( this.playername + "的[" + this.skills[i].name + "]对木桩造成了" + this.skills[i].damage + "伤害")
         while (this.battledata.length > 14) {
           this.battledata.shift()
+        }*/
+        //this.battledata.push(skilldata.work(usedata.activeskills[i].id, this.playerA, '木桩'))
+        this.battledata = []
+        var tmpd = skilldata.work(usedata.activeskills[i].id, this.playerA, this.playerB)
+        for (var k = 0; k < tmpd.length; k++) {
+          this.battledata.push(tmpd[k])
         }
+
+        // ai
+
+        var tmpd = skilldata.endround(this.playerA, this.playerB)
+        for (var k = 0; k < tmpd.length; k++) {
+          this.battledata.push(tmpd[k])
+        }
+        /*
+        while (this.battledata.length > 14) {
+          this.battledata.shift()
+        }
+        */
         break;
       }
     }
@@ -78,13 +102,37 @@ export default class Main {
    * 每一帧重新绘制所有的需要展示的元素
    */
   render() {
+    var y = 70
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillText(this.playername + "   对阵   木桩", 20, 70)
+    // title name
+    canvasTextAutoLine(this.playerA.name, canvas, tx, y, 20)
+    canvasTextCenter('对阵', canvas, tx, y, tx)
+    canvasTextRight(this.playerB.name, canvas, tx, y, tx)
+    y += 20
+    // hp
+    canvasTextAutoLine('血量:' + this.playerA.hpnow + '/' + this.playerA.gethpmax(), canvas, tx, y, 20)
+    canvasTextRight('血量:' + this.playerB.hpnow + '/' + this.playerB.gethpmax(), canvas, tx, y, 20)
+    y += 20
+    // source
+    canvasTextAutoLine(this.playerA.getsourcename() + this.playerA.sourcenow + '/' + this.playerA.getsourcemax(), canvas, tx, y, 20)
+    canvasTextRight(this.playerB.getsourcename() + this.playerB.sourcenow + '/' + this.playerB.getsourcemax(), canvas, tx, y, 20)
+    y += 20
+    
+    // main word
+    canvasTextAutoLine('战斗记录:', canvas, tx, y, tx)
+    y += 20
+
     for (var i = 0; i < this.battledata.length; i++) {
-      ctx.fillText(this.battledata[i], 20, 90 + i * 20)
+      //ctx.fillText(this.battledata[i], tx, 90 + i * 20)
+      y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
     }
+    /*
     for (var i = 0; i < this.skills.length; i++) {
       ctx.fillText(this.skills[i].name, this.skills[i].x, this.skills[i].y)
+    }
+    */
+    for (var i = 0; i < usedata.activeskills.length; i++) {
+      ctx.fillText(usedata.activeskills[i].name, this.skillspos[i].x, this.skillspos[i].y)
     }
   }
 

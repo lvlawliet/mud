@@ -1,16 +1,16 @@
-import Main from './main'
+import CreateRole from './createrole'
 import BackGround from './runtime/background'
+import DataBus from './databus'
 
 let ctx = canvas.getContext('2d')
 let stop = false
+let usedata = new DataBus()
 
 export default class Ulogin {
   
   constructor(){
-
+    usedata.setdata()
     this.bindLoop = this.loop.bind(this)
-    //this.bg = new BackGround(ctx)
-
     window.requestAnimationFrame(
       this.bindLoop,
       canvas
@@ -19,11 +19,8 @@ export default class Ulogin {
   
   render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-    //this.bg.render(ctx)
   }
   update(){
-    //this.bg.update()
   }
 
   loop() {
@@ -59,7 +56,7 @@ button.onTap(function (res) {
   if (res.errMsg == "getUserInfo:ok") {
     button.hide()
     stop = true
-    new Main(res.userInfo)
+    new CreateRole(res.userInfo)
   }
   else {
     wx.showModal({
