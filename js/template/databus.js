@@ -1,4 +1,3 @@
-import Pool from './base/pool'
 import SkillBus from './skillbus'
 
 let instance
@@ -119,6 +118,8 @@ export default class DataBus {
   }
   
   saveskill(e) {
+    this.activeskills = []
+    this.passiveskills = []
     for (var i = 0; i < e.length; i++) {
       var skill = skilldata.skills[e[i]]
       if (skill.type != 'passive') {

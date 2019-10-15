@@ -35,7 +35,7 @@ export default class template {
         gengu: 50,
         hpbase: 5000,
         activeskills: [],
-        passiveskills: [],
+        passiveskills: [1000, 1001],
       }
     }
 

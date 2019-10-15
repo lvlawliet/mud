@@ -1,14 +1,19 @@
-import Player     from './player/index'
-import Enemy      from './npc/enemy'
+import Player from './player/index'
+import Enemy from './npc/enemy'
 import BackGround from './runtime/background'
-import GameInfo   from './runtime/gameinfo'
-import Music      from './runtime/music'
-import DataBus from './databus'
-import SkillBus from './skillbus'
+import GameInfo from './runtime/gameinfo'
+import Music from './runtime/music'
+import DataBus from './template/databus'
+import SkillBus from './template/skillbus'
+import CreateRole from './createrole'
 import actorimp from './actorimp'
-import template from './template'
+import template from './template/template'
 
-import { canvasTextAutoLine, canvasTextRight, canvasTextCenter } from './util/utilf'
+import {
+  canvasTextAutoLine,
+  canvasTextRight,
+  canvasTextCenter
+} from './util/utilf'
 
 let ctx = canvas.getContext('2d')
 let usedata = new DataBus()
@@ -33,19 +38,31 @@ export default class Main {
       canvas
     )
     this.battledata = []
-    this.skillspos = [
-      { x: canvas.width * 1 / 12, y: canvas.height - 120 },
-      { x: canvas.width / 2 + canvas.width * 1 / 12, y: canvas.height - 120 },
-      { x: canvas.width * 1 / 12, y: canvas.height - 60 },
-      { x: canvas.width / 2 + canvas.width * 1 / 12, y: canvas.height - 60 }
-                  ]
+    this.skillspos = [{
+        x: canvas.width * 1 / 12,
+        y: canvas.height - 120
+      },
+      {
+        x: canvas.width / 2 + canvas.width * 1 / 12,
+        y: canvas.height - 120
+      },
+      {
+        x: canvas.width * 1 / 12,
+        y: canvas.height - 60
+      },
+      {
+        x: canvas.width / 2 + canvas.width * 1 / 12,
+        y: canvas.height - 60
+      }
+    ]
     this.initEvent()
     this.playerA = new actorimp(0, usedata)
     this.playerB = new actorimp(1, tempman.npc[0])
-    console.log(this.playerB)
+    this.result = 0
+    this.stop = false
   }
 
-  initEvent(){
+  initEvent() {
     wx.onTouchStart(((e) => {
       this.x = e.touches[0].clientX
       this.y = e.touches[0].clientY
@@ -64,35 +81,68 @@ export default class Main {
   }
 
   //check skill
-  checkskill( x, y) {
-    for (var i = 0; i < usedata.activeskills.length; i++) {
-      let tmpx = this.skillspos[i].x
-      let tmpy = this.skillspos[i].y
-      if ( x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30 ){
-        /*
-        this.battledata.push( this.playername + "的[" + this.skills[i].name + "]对木桩造成了" + this.skills[i].damage + "伤害")
-        while (this.battledata.length > 14) {
-          this.battledata.shift()
-        }*/
-        //this.battledata.push(skilldata.work(usedata.activeskills[i].id, this.playerA, '木桩'))
-        this.battledata = []
-        var tmpd = skilldata.work(usedata.activeskills[i].id, this.playerA, this.playerB)
-        for (var k = 0; k < tmpd.length; k++) {
-          this.battledata.push(tmpd[k])
-        }
+  checkskill(x, y) {
+    if (this.stop == false) {
+      if (this.result == 0) {
+        for (var i = 0; i < usedata.activeskills.length; i++) {
+          let tmpx = this.skillspos[i].x
+          let tmpy = this.skillspos[i].y
+          if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
+            /*
+            this.battledata.push( this.playername + "的[" + this.skills[i].name + "]对木桩造成了" + this.skills[i].damage + "伤害")
+            while (this.battledata.length > 14) {
+              this.battledata.shift()
+            }*/
+            //this.battledata.push(skilldata.work(usedata.activeskills[i].id, this.playerA, '木桩'))
+            this.battledata = []
+            var tmpd = skilldata.work(usedata.activeskills[i].id, this.playerA, this.playerB)
+            for (var k = 0; k < tmpd.length; k++) {
+              this.battledata.push(tmpd[k])
+            }
 
-        // ai
+            // checkalive
+            var tmpa = skilldata.checkalive(this.playerA, this.playerB)
+            var result = tmpa.result
+            var tmpd = tmpa.info
 
-        var tmpd = skilldata.endround(this.playerA, this.playerB)
-        for (var k = 0; k < tmpd.length; k++) {
-          this.battledata.push(tmpd[k])
+            for (var k = 0; k < tmpd.length; k++) {
+              this.battledata.push(tmpd[k])
+            }
+            if (result != 0) {
+              this.result = result
+              if (result == 1) {
+                this.battledata.push(this.playerA.name + "获胜")
+              } else
+                if (result == 2) {
+                  this.battledata.push(this.playerB.name + "获胜")
+                } else
+                  if (result == 3) {
+                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                  }
+              this.battledata.push("点击任意地方重新开始")
+              break;
+            }
+            // ai
+
+            var tmpd = skilldata.endround(this.playerA, this.playerB)
+            for (var k = 0; k < tmpd.length; k++) {
+              this.battledata.push(tmpd[k])
+            }
+            /*
+            while (this.battledata.length > 14) {
+              this.battledata.shift()
+            }
+            */
+            break;
+          }
         }
-        /*
-        while (this.battledata.length > 14) {
-          this.battledata.shift()
+      } else {
+        this.stop = true
+        var res = {
+          nickName: this.playerA.name
         }
-        */
-        break;
+        new CreateRole(res)
+        delete this
       }
     }
   }
@@ -117,7 +167,7 @@ export default class Main {
     canvasTextAutoLine(this.playerA.getsourcename() + this.playerA.sourcenow + '/' + this.playerA.getsourcemax(), canvas, tx, y, 20)
     canvasTextRight(this.playerB.getsourcename() + this.playerB.sourcenow + '/' + this.playerB.getsourcemax(), canvas, tx, y, 20)
     y += 20
-    
+
     // main word
     canvasTextAutoLine('战斗记录:', canvas, tx, y, tx)
     y += 20
@@ -137,18 +187,18 @@ export default class Main {
   }
 
   // 游戏逻辑更新主函数
-  update() {
-  }
+  update() {}
 
   // 实现游戏帧循环
   loop() {
+    if (this.stop == false) {
+      this.update()
+      this.render()
 
-    this.update()
-    this.render()
-
-    window.requestAnimationFrame(
-      this.bindLoop,
-      canvas
-    )
+      window.requestAnimationFrame(
+        this.bindLoop,
+        canvas
+      )
+    }
   }
 }

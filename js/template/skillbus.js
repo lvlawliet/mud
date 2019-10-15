@@ -158,6 +158,28 @@ export default class SkillBus {
         other: 0,
         type: 'damage',
       },
+      1000: {
+        id: 1000,
+        name: '祈音遍世',
+        cost: 0,
+        des: '',
+        damagebase: 0,
+        damageratiomin: 0,
+        damageratiomax: 0,
+        other: 0,
+        type: 'passive',
+      },
+      1001: {
+        id: 1001,
+        name: '甘霖普降·洗尽铅华',
+        cost: 0,
+        des: '',
+        damagebase: 0,
+        damageratiomin: 0,
+        damageratiomax: 0,
+        other: 0,
+        type: 'passive',
+      },
     }
   }
 
@@ -194,8 +216,11 @@ export default class SkillBus {
       type = 1
       damage = Math.floor(damage * 1.5)
     }
-    target.hpnow -= damage
-    return { 0:type, 1:damage}
+    target.hpadd(-damage)
+    return {
+      0: type,
+      1: damage
+    }
   }
 
   endround(cast, target) {
@@ -206,7 +231,53 @@ export default class SkillBus {
         dinfo.push(effect[i])
       }
     }
+    for (var key in target.passiveskills) {
+      var effect = this.dopassiveskills(target.passiveskills[key], target, cast)
+      for (var i = 0; i < effect.length; i++) {
+        dinfo.push(effect[i])
+      }
+    }
     return dinfo
+  }
+
+  // check alive
+  checkalive(playerA, playerB) {
+    var dinfo = []
+    if (playerA.hpnow <= 0) {
+      dinfo.push(playerA.name + "被" + playerB.name + "打成重伤")
+      for (var key in playerA.passiveskills) {
+        var effect = this.dodeadeffect(playerA.passiveskills[key], playerA, playerB)
+        for (var i = 0; i < effect.length; i++) {
+          dinfo.push(effect[i])
+        }
+      }
+    }
+    if (playerB.hpnow <= 0) {
+      dinfo.push(playerB.name + "被" + playerA.name + "打成重伤")
+      for (var key in playerB.passiveskills) {
+        var effect = this.dodeadeffect(playerB.passiveskills[key], playerB, playerA)
+        for (var i = 0; i < effect.length; i++) {
+          dinfo.push(effect[i])
+        }
+      }
+    }
+    if (playerA.hpnow <= 0 && playerB.hpnow <= 0) {}
+    if (playerA.hpnow <= 0) {
+      return {
+        result: 2,
+        info: dinfo
+      }
+    }
+    if (playerB.hpnow <= 0) {
+      return {
+        result: 1,
+        info: dinfo
+      }
+    }
+    return {
+      result: 0,
+      info: dinfo
+    }
   }
 
   // skill main work
@@ -263,7 +334,10 @@ export default class SkillBus {
         cast.sourcenow -= 20
         var rand = Math.floor(Math.random() * 5) + 1
         var buff = this.buffs[rand]
-        cast.buffs[buff.id] = { buff: buff, number: 1 }
+        cast.buffs[buff.id] = {
+          buff: buff,
+          number: 1
+        }
         dinfo.push(cast.name + "通过[" + skill.name + "]消耗了20点剑意并领悟了[" + buff.name + "]")
       }
     }
@@ -271,29 +345,33 @@ export default class SkillBus {
   }
 
   // do skill effect after damage
-  doeffectafterdamage(skill, cast, target){
+  doeffectafterdamage(skill, cast, target) {
     var dinfo = []
     if (skill.id == 101) {
       var rand = Math.floor(Math.random() * 5) + 1
       var buff = this.buffs[rand]
-      cast.buffs[buff.id] = {buff: buff, number: 1}
+      cast.buffs[buff.id] = {
+        buff: buff,
+        number: 1
+      }
       dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了[" + buff.name + "]")
-    }
-    else
+    } else
     if (skill.id == 102) {
       var rand = Math.floor(Math.random() * 100)
-      if ( rand < 20) {
+      if (rand < 20) {
         for (var i = 1; i <= 5; i++) {
           if (cast.buffs.hasOwnProperty(i) == false) {
             var buff = this.buffs[i]
-            cast.buffs[i] = { buff: buff, number: 1 }
+            cast.buffs[i] = {
+              buff: buff,
+              number: 1
+            }
             dinfo.push(cast.name + "通过[" + skill.name + "]领悟了[" + buff.name + "]")
             break;
           }
         }
-      } 
-    }
-    else
+      }
+    } else
     if (skill.id == 106) {
       dinfo.push(cast.name + "的[" + skill.name + "]消耗掉了全部剑声")
       for (var i = 1; i <= 5; i++) {
@@ -310,6 +388,11 @@ export default class SkillBus {
     if (skill.id == 105) {
       var tmps = cast.sourceadd(20)
       dinfo.push(cast.name + "通过[" + skill.name + "]恢复了" + tmps + "点剑意")
+    } else
+    if (skill.id == 1000) {
+      var tmps = cast.hpadd(1 * cast.getgengu())
+      dinfo.push(cast.name + "受到玄武真道教宗的[" + skill.name + "]祝福，恢复了" + tmps + "点生命")
+
     }
     return dinfo
   }
@@ -334,13 +417,23 @@ export default class SkillBus {
     return skill
   }
 
+  dodeadeffect(skill, cast, target) {
+    var dinfo = []
+    if (skill.id == 1001) {
+      if (cast.hpnow > -600) {
+        cast.hpnow = cast.gethpmax()
+        dinfo.push(cast.name + "受到的伤害并未至死，并且受到玄武真神[" + skill.name + "]神力的庇护，伤势痊愈。玄武真道，齐天寿甲！")
+      }
+    }
+    return dinfo
+  }
+
   // big skill extra describe
   bigskilldes(skill, cast, target) {
     var dinfo = []
     if (skill.id == 106) {
       dinfo.push(skill.des)
     }
-
     return dinfo
   }
 

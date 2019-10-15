@@ -1,14 +1,14 @@
 import CreateRole from './createrole'
 import BackGround from './runtime/background'
-import DataBus from './databus'
+import DataBus from './template/databus'
 
 let ctx = canvas.getContext('2d')
 let stop = false
 let usedata = new DataBus()
 
 export default class Ulogin {
-  
-  constructor(){
+
+  constructor() {
     usedata.setdata()
     this.bindLoop = this.loop.bind(this)
     window.requestAnimationFrame(
@@ -16,22 +16,17 @@ export default class Ulogin {
       canvas
     )
   }
-  
+
   render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
   }
-  update(){
-  }
+  update() {}
 
   loop() {
     if (stop == false) {
       this.update()
       this.render()
-      window.requestAnimationFrame(
-        this.bindLoop,
-        canvas
-      )
-    }
+    } 
   }
 }
 
@@ -52,13 +47,12 @@ let button = wx.createUserInfoButton({
   }
 });
 
-button.onTap(function (res) {
+button.onTap(function(res) {
   if (res.errMsg == "getUserInfo:ok") {
     button.hide()
     stop = true
     new CreateRole(res.userInfo)
-  }
-  else {
+  } else {
     wx.showModal({
       title: "授权用户信息方可登录\r\n放心\r\n我们不会把用户信息挪作他用~",
       showCancel: false

@@ -1,17 +1,17 @@
 import Main from './main'
-import DataBus from './databus'
-import SkillBus from './skillbus'
+import DataBus from './template/databus'
+import SkillBus from './template/skillbus'
 
 import { canvasTextAutoLine } from './util/utilf'
 
 let ctx = canvas.getContext('2d')
-let stop = false
 let usedata = new DataBus()
 let skilldata = new SkillBus()
 let tx = canvas.width * 1 / 12
 
-export default class CreateRole {
 
+export default class CreateRole {
+//class CreateRole {
   constructor(e) {
     // evn
     ctx.font = "14px Georgia";
@@ -27,6 +27,7 @@ export default class CreateRole {
       this.bindLoop,
       canvas
     )
+    this.stop = false
     this.initEvent()
   }
 
@@ -40,6 +41,7 @@ export default class CreateRole {
   }
 
   checkpoint(x, y) {
+    console.log("123")
     if (this.page==0) {
       this.checkpage1(x,y)
     } else if (this.page == 1) {
@@ -78,9 +80,10 @@ export default class CreateRole {
       flag = true
     }
     if (flag == true) {
-      stop = true
+      this.stop = true
       this.page++
       new Main()
+      delete this
     }
   }
 
@@ -144,7 +147,7 @@ export default class CreateRole {
   }
 
   loop() {
-    if (stop == false) {
+    if (this.stop == false) {
       this.update()
       this.render()
       window.requestAnimationFrame(
@@ -153,5 +156,4 @@ export default class CreateRole {
       )
     }
   }
-
 }

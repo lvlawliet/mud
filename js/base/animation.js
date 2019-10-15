@@ -1,5 +1,5 @@
 import Sprite  from './sprite'
-import DataBus from '../databus'
+import DataBus from '../template/databus'
 
 let databus = new DataBus()
 

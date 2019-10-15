@@ -1,6 +1,8 @@
-import template from './template'
+import template from './template/template'
+import SkillBus from './template/skillbus'
 
 let tempman = new template()
+let skilldata = new SkillBus()
 
 export default class actorimp {
   constructor(type, e) {
@@ -24,8 +26,14 @@ export default class actorimp {
       this.dingli = e.dingli
       this.gengu = e.gengu
       this.hpbase = e.hpbase
-      this.activeskills = e.activeskills
-      this.passiveskills = e.passiveskills
+      this.activeskills = []
+      this.passiveskills = []
+      for (var i = 0; i < e.activeskills.length; i++) {
+        this.activeskills.push(skilldata.skills[e.activeskills[i]])
+      }
+      for (var i = 0; i < e.passiveskills.length; i++) {
+        this.passiveskills.push(skilldata.skills[e.passiveskills[i]])
+      }
     }
     this.hpnow = this.gethpmax()
     this.sourcenow = this.getsourceinit();
@@ -97,8 +105,8 @@ export default class actorimp {
     return this.dingli + this.getextradingli()
   }
 
-  getgenggu() {
-    return this.genggu + this.getextragenggu()
+  getgengu() {
+    return this.gengu + this.getextragengu()
   }
 
   gethpmax() {
@@ -120,8 +128,7 @@ export default class actorimp {
   getsourceinit() {
     if (this.job == 0) {
       return tempman.job[this.job].sourceinit
-    }
-    else
+    } else
     if (this.job == 1) {
       return tempman.job[this.job].sourceinit
     }
@@ -130,8 +137,7 @@ export default class actorimp {
   getsourcemax() {
     if (this.job == 0) {
       return tempman.job[this.job].sourcemax
-    }
-    else
+    } else
     if (this.job == 1) {
       return tempman.job[this.job].sourcemax
     }
@@ -149,6 +155,22 @@ export default class actorimp {
       this.sourcenow = max
     } else {
       this.sourcenow += e
+    }
+    return realadd
+  }
+
+  hpadd(e) {
+    var max = this.gethpmax()
+    var realadd = e
+    if (e > 0) {
+      if (this.hpnow + e > max) {
+        realadd = max - this.hpnow
+        this.hpnow = max
+      } else {
+        this.hpnow += e
+      }
+    } else {
+      this.hpnow += e
     }
     return realadd
   }
