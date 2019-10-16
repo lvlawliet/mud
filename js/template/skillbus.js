@@ -175,6 +175,17 @@ export default class SkillBus {
         other: 0,
         type: 'damage',
       },
+      200: {
+        id: 200,
+        name: '影回',
+        cost: 0,
+        des: '',
+        damagebase: 0,
+        damageratiomin: 0,
+        damageratiomax: 0,
+        other: 0,
+        type: 'passive',
+      },
       1000: {
         id: 1000,
         name: '祈音遍世',
@@ -492,6 +503,10 @@ export default class SkillBus {
     if (skill.id == 105) {
       var tmps = cast.sourceadd(20)
       dinfo.push(cast.name + "通过[" + skill.name + "]恢复了" + tmps + "点剑意")
+    } else
+    if (skill.id == 200) {
+      var tmps = cast.sourceadd(40) 
+      dinfo.push(cast.name + "恢复了" + tmps + "点影")
     } else
     if (skill.id == 1000) {
       var tmps = cast.hpadd(1 * cast.getgengu())

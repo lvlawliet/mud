@@ -164,21 +164,11 @@ export default class actorimp {
   }
 
   getsourceinit() {
-    if (this.job == 0) {
-      return tempman.job[this.job].sourceinit
-    } else
-    if (this.job == 1) {
-      return tempman.job[this.job].sourceinit
-    }
+    return tempman.job[this.job].sourceinit
   }
 
   getsourcemax() {
-    if (this.job == 0) {
-      return tempman.job[this.job].sourcemax
-    } else
-    if (this.job == 1) {
-      return tempman.job[this.job].sourcemax
-    }
+    return tempman.job[this.job].sourcemax
   }
 
   getsourcename() {

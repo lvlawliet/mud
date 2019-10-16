@@ -58,12 +58,12 @@ export default class Main {
     ]
     this.initEvent()
     this.playerA = new actorimp(0, usedata)
-    this.playerB = new actorimp(1, tempman.npc[0])
+    this.playerB = new actorimp(1, tempman.npc[1])
     this.result = 0
     this.stopflag = false
     this.battledata = []
 
-    this.restart = function () {
+    this.restart = function() {
       this.x = 0
       this.y = 0
       this.playerA = new actorimp(0, usedata)
@@ -109,6 +109,7 @@ export default class Main {
           let tmpy = this.skillspos[i].y
           if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
             this.battledata = []
+            this.battledata.push("Left")
             var tmpd = skilldata.work(usedata.activeskills[i].id, this.playerA, this.playerB)
             for (var k = 0; k < tmpd.length; k++) {
               this.battledata.push(tmpd[k])
@@ -127,17 +128,19 @@ export default class Main {
               if (result == 1) {
                 this.battledata.push(this.playerA.name + "获胜")
               } else
-                if (result == 2) {
-                  this.battledata.push(this.playerB.name + "获胜")
-                } else
-                  if (result == 3) {
-                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
-                  }
+              if (result == 2) {
+                this.battledata.push(this.playerB.name + "获胜")
+              } else
+              if (result == 3) {
+                this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+              }
               this.battledata.push("点击任意地方重新开始")
               break;
             }
             // ai
+            this.battledata.push("Right")
 
+            this.battledata.push("Middle")
             var tmpd = skilldata.endround(this.playerA, this.playerB)
             for (var k = 0; k < tmpd.length; k++) {
               this.battledata.push(tmpd[k])
@@ -186,7 +189,20 @@ export default class Main {
     y += 20
 
     for (var i = 0; i < this.battledata.length; i++) {
-      y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
+      if (this.battledata[i] == "Left") {
+        y = canvasTextAutoLine("先手", canvas, tx, y, 20)
+      } else
+      if (this.battledata[i] == "Right") {
+        canvasTextRight("后手", canvas, tx, y, 20)
+        y += 20
+      } else
+      if (this.battledata[i] == "Middle") {
+        canvasTextCenter("尾声", canvas, tx, y, 20)
+        y += 20
+      } else {
+        y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
+      }
+      //y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
     }
     for (var i = 0; i < usedata.activeskills.length; i++) {
       ctx.fillText(usedata.activeskills[i].name, this.skillspos[i].x, this.skillspos[i].y)

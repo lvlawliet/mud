@@ -21,6 +21,13 @@ export default class Template {
         sourcemax: 100,
         sourceinit: 50,
       },
+      2: {
+        id: 2,
+        name: '杀手',
+        sourcename: '影',
+        sourcemax: 200,
+        sourceinit: 200,
+      },
     }
 
     this.npc = {
@@ -36,6 +43,19 @@ export default class Template {
         hpbase: 5000,
         activeskills: [],
         passiveskills: [1000, 1001],
+      },
+      1: {
+        id: 1,
+        name: '风铃一刀声',
+        job: 2,
+        tizhi: 10,
+        shenfa:40,
+        bili: 18,
+        dingli: 30,
+        gengu: 0,
+        hpbase: 2000,
+        activeskills: [],
+        passiveskills: [200],
       }
     }
 
