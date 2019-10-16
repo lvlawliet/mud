@@ -12,27 +12,44 @@ export default class SkillBus {
         id: 1,
         name: '剑声·宫',
         max: 1,
+        round: -99,
       },
       2: {
         id: 2,
         name: '剑声·商',
         max: 1,
+        round: -99,
       },
       3: {
         id: 3,
         name: '剑声·角',
         max: 1,
+        round: -99,
       },
       4: {
         id: 4,
         name: '剑声·徵',
         max: 1,
+        round: -99,
       },
       5: {
         id: 5,
         name: '剑声·羽',
         max: 1,
+        round: -99,
       },
+      6: {
+        id: 6,
+        name: '龙悟',
+        max: 25,
+        round: -99,
+      },
+      7: {
+        id: 7,
+        name: '庐山不动',
+        max: 1,
+        round: 2,
+      }
     }
 
     // skills
@@ -51,8 +68,8 @@ export default class SkillBus {
       2: {
         id: 2,
         name: '离刀斩',
-        cost: 30,
-        des: '以气御刀，影随刀动，造成中量伤害，增加三层龙悟，有小概率返还消耗刀气或增加六层龙悟',
+        cost: 50,
+        des: '以气御刀，影随刀动，造成中量伤害，增加三层龙悟，有小概率返还消耗狂刀值或增加六层龙悟',
         damagebase: 200,
         damageratiomin: 2.5,
         damageratiomax: 2.6,
@@ -62,8 +79,8 @@ export default class SkillBus {
       3: {
         id: 3,
         name: '庐山不动一刀痕',
-        cost: 30,
-        des: '双手握刀进入冥想状态，消耗所有刀气，大幅度降低下一次伤害并回复消耗的双倍刀气',
+        cost: 20,
+        des: '双手握刀进入冥想状态，放弃本次行动，但极大的提高自身能力，持续到下回合结束',
         damagebase: 0,
         damageratiomin: 0,
         damageratiomax: 0,
@@ -74,7 +91,7 @@ export default class SkillBus {
         id: 4,
         name: '刀狂·亢龙有悔',
         cost: 80,
-        des: '将刀术发挥到极致，使刀与龙产生共鸣，消耗所有龙悟，对目标造成致命伤害',
+        des: '将刀术发挥到极致，使刀与龙产生共鸣，消耗所有龙悟，对目标造成致命伤害，并根据消耗的龙悟回复狂刀值',
         damagebase: 500,
         damageratiomin: 3,
         damageratiomax: 3.5,
@@ -85,7 +102,7 @@ export default class SkillBus {
         id: 5,
         name: '刀心·龙悟',
         cost: 0,
-        des: '(被动)杀刀融入狂龙之意，提高自己的伤害能力，并强化绝招',
+        des: '(被动)杀刀融入狂龙之意，强化自身能力，造成伤害时根据龙悟层数回复狂刀值，并强化绝招',
         damagebase: 0,
         damageratiomin: 0,
         damageratiomax: 0,
@@ -140,7 +157,7 @@ export default class SkillBus {
         id: 105,
         name: '观剑不则声',
         cost: 0,
-        des: '根据剑之韵律领悟剑意之声，每回合结束后回复20点剑意，同事根据宫商角徵羽不同音律提升各有不同，而且更可以从五律之中领悟天剑慕容府的绝世剑招·烟雨斜阳',
+        des: '(被动)根据剑之韵律领悟剑意之声，每回合结束后回复20点剑意，同事根据宫商角徵羽不同音律提升各有不同，而且更可以从五律之中领悟天剑慕容府的绝世剑招·烟雨斜阳',
         damagebase: 0,
         damageratiomin: 0,
         damageratiomax: 0,
@@ -195,7 +212,7 @@ export default class SkillBus {
     if (skill.type != 'damage') {
       return true;
     }
-    var hitpercent = 75 + (cast.getshenfa() - target.getshenfa()) / 8
+    var hitpercent = 75 + (cast.getshenfa() - target.getshenfa()) / 8 + cast.getextrahit()
     var rand = Math.floor(Math.random() * 100)
     if (hitpercent >= rand) {
       return true
@@ -205,7 +222,6 @@ export default class SkillBus {
 
   calculatedamage(skill, cast, target) {
     var type = 0
-    //var more = Math.floor(Math.random() * (skill.damageratiomax - skill.damageratiomin) * cast.getphyattack()) / 100 * 50
     var more = (Math.random() * (skill.damageratiomax - skill.damageratiomin) + skill.damageratiomin) * cast.getphyattack()
     var damage = Math.floor(skill.damagebase + more)
     damage -= target.getphydefence()
@@ -225,16 +241,40 @@ export default class SkillBus {
 
   endround(cast, target) {
     var dinfo = []
+    // do passive
     for (var key in cast.passiveskills) {
       var effect = this.dopassiveskills(cast.passiveskills[key], cast, target)
       for (var i = 0; i < effect.length; i++) {
         dinfo.push(effect[i])
       }
     }
+    // do buff
+    for (var key in cast.buffs) {
+      var buff = this.buffs[key]
+      if (cast.buffs[key].round != -99) {
+        cast.buffs[key].round--
+          if (cast.buffs[key].round <= 0) {
+            delete cast.buffs[key]
+            dinfo.push("[" + buff.name + "]" + "从" + cast.name + "身上消失")
+          }
+      }
+    }
+    // do passive
     for (var key in target.passiveskills) {
       var effect = this.dopassiveskills(target.passiveskills[key], target, cast)
       for (var i = 0; i < effect.length; i++) {
         dinfo.push(effect[i])
+      }
+    }
+    // do buff
+    for (var key in target.buffs) {
+      if (target.buffs[key].round != -99) {
+        var buff = this.buffs[key]
+        target.buffs[key].round--
+          if (target.buffs[key].round <= 0) {
+            delete target.buffs[key]
+            dinfo.push("[" + buff.name + "]" + "从" + target.name + "身上消失")
+          }
       }
     }
     return dinfo
@@ -292,6 +332,7 @@ export default class SkillBus {
     // skill replace
     skill = this.checkreplace(skill, cast, target)
     // hit or not
+    var type = -1
     if (this.checkhit(skill, cast, target) == false) {
       //dinfo.push(target.name + "轻轻侧身，躲过了" + cast.name + "的[" + skill.name + "]")
       dinfo.push(cast.name + "手上略感吃力," + "[" + skill.name + "]并未击中" + target.name)
@@ -301,10 +342,8 @@ export default class SkillBus {
         dinfo.push(bdes[i])
       }
       if (skill.type == 'damage') {
-        //var more = Math.floor(Math.random() * (skill.damageratiomax - skill.damageratiomin) * cast.getphyattack()) / 100 * 50
-        //var damage = Math.floor(skill.damagebase + more)
         var re = this.calculatedamage(skill, cast, target, type)
-        var type = re[0]
+        type = re[0]
         var damage = re[1]
         if (type == 0) {
           dinfo.push(cast.name + "的[" + skill.name + "]对" + target.name + "造成了" + damage + "伤害")
@@ -318,8 +357,18 @@ export default class SkillBus {
         }
       }
     }
+    // do first use buff
+    var effect = this.dofirstusebuff(skill, cast, target, type)
+    for (var i = 0; i < effect.length; i++) {
+      dinfo.push(effect[i])
+    }
+    // do buff effect after damage
+    var effect = this.dobuffeffectafterdamage(skill, cast, target, type)
+    for (var i = 0; i < effect.length; i++) {
+      dinfo.push(effect[i])
+    }
     // effect
-    var effect = this.doeffectafterdamage(skill, cast, target)
+    var effect = this.doeffectafterdamage(skill, cast, target, type)
     for (var i = 0; i < effect.length; i++) {
       dinfo.push(effect[i])
     }
@@ -329,55 +378,110 @@ export default class SkillBus {
   // do not damage or heal skill
   dootherskill(skill, cast, target) {
     var dinfo = []
+    if (skill.id == 3) {
+      var buff = this.buffs[7]
+      cast.addbuff(buff.id, 1)
+      dinfo.push(cast.name + "通过[" + skill.name + "]获得了[" + buff.name + "]的状态")
+    }
+    // skill_103
     if (skill.id == 103) {
       while (cast.sourcenow >= 20) {
         cast.sourcenow -= 20
         var rand = Math.floor(Math.random() * 5) + 1
         var buff = this.buffs[rand]
-        cast.buffs[buff.id] = {
-          buff: buff,
-          number: 1
-        }
+        cast.addbuff(buff.id, 1)
         dinfo.push(cast.name + "通过[" + skill.name + "]消耗了20点剑意并领悟了[" + buff.name + "]")
       }
     }
     return dinfo
   }
 
-  // do skill effect after damage
-  doeffectafterdamage(skill, cast, target) {
+  // do first use buff
+  dofirstusebuff(skill, cast, target, type) {
     var dinfo = []
-    if (skill.id == 101) {
-      var rand = Math.floor(Math.random() * 5) + 1
-      var buff = this.buffs[rand]
-      cast.buffs[buff.id] = {
-        buff: buff,
-        number: 1
-      }
-      dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了[" + buff.name + "]")
-    } else
-    if (skill.id == 102) {
-      var rand = Math.floor(Math.random() * 100)
-      if (rand < 20) {
-        for (var i = 1; i <= 5; i++) {
-          if (cast.buffs.hasOwnProperty(i) == false) {
-            var buff = this.buffs[i]
-            cast.buffs[i] = {
-              buff: buff,
-              number: 1
-            }
-            dinfo.push(cast.name + "通过[" + skill.name + "]领悟了[" + buff.name + "]")
-            break;
-          }
-        }
-      }
-    } else
-    if (skill.id == 106) {
-      dinfo.push(cast.name + "的[" + skill.name + "]消耗掉了全部剑声")
-      for (var i = 1; i <= 5; i++) {
-        delete cast.buffs[i]
+    if (skill.id == 4) {
+      var buff = this.buffs[6]
+      var tmp = cast.getbuffnumber(6)
+      var tmps = cast.sourceadd(tmp * 4)
+      cast.removebuff(6, 99)
+      dinfo.push(cast.name + "通过[" + skill.name + "]消耗了全部[" + buff.name + "]，并回复了" + tmps + "狂刀值")
+    }
+    return dinfo
+  }
+
+  // do buff effect after damage
+  dobuffeffectafterdamage(skill, cast, target, type) {
+    var dinfo = []
+    for (var key in cast.buffs) {
+      if (key == 6 && type != -1) {
+        var num = cast.buffs[key].number
+        var tmps = cast.sourceadd(num)
+        dinfo.push(cast.name + "通过[" + this.buffs[key].name + "]回复了" + tmps + "点狂刀值")
       }
     }
+    return dinfo
+  }
+
+  // do skill effect after damage
+  doeffectafterdamage(skill, cast, target, type) {
+    var dinfo = []
+    // skill_1
+    if (skill.id == 1 && type != -1) {
+      var tmps = 0
+      if (type == 0) {
+        tmps = cast.sourceadd(20)
+      } else {
+        tmps = cast.sourceadd(40)
+      }
+      dinfo.push(cast.name + "的[" + skill.name + "]造成伤害产生了" + tmps + "点狂刀值")
+      var buff = this.buffs[6]
+      cast.addbuff(buff.id, 1)
+      dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了一层[" + buff.name + "]")
+    } else
+      // skill_2
+      if (skill.id == 2) {
+        var rand = Math.floor(Math.random() * 100)
+        if (rand < 25) {
+          var rand2 = Math.floor(Math.random() * 100)
+          if (rand2 < 50) {
+            var buff = this.buffs[6]
+            cast.addbuff(buff.id, 3)
+            dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了三层[" + buff.name + "]")
+          } else {
+            var tmps = cast.sourceadd(skill.cost)
+            dinfo.push(cast.name + "的[" + skill.name + "]返还了所有消耗的狂刀值")
+          }
+        }
+      } else
+        // skill_101
+        if (skill.id == 101) {
+          var rand = Math.floor(Math.random() * 5) + 1
+          var buff = this.buffs[rand]
+          cast.addbuff(buff.id, 1)
+          dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了[" + buff.name + "]")
+        } else
+          // skill_102
+          if (skill.id == 102) {
+            var rand = Math.floor(Math.random() * 100)
+            if (rand < 20) {
+              for (var i = 1; i <= 5; i++) {
+                if (cast.buffs.hasOwnProperty(i) == false) {
+                  var buff = this.buffs[i]
+                  cast.addbuff(buff.id, 1)
+                  dinfo.push(cast.name + "通过[" + skill.name + "]领悟了[" + buff.name + "]")
+                  break;
+                }
+              }
+            }
+          } else
+            // skill_106
+            if (skill.id == 106) {
+              dinfo.push(cast.name + "的[" + skill.name + "]消耗掉了全部剑声")
+              for (var i = 1; i <= 5; i++) {
+                //delete cast.buffs[i]
+                cast.removebuff(i, 1)
+              }
+            }
 
     return dinfo
   }
@@ -400,7 +504,6 @@ export default class SkillBus {
   // check skill replace
   checkreplace(skill, cast, target) {
     if (skill.id == 104) {
-      console.log(cast.buffs)
       var flag = true
       for (var i = 1; i <= 5; i++) {
         if (cast.buffs.hasOwnProperty(i) == false) {

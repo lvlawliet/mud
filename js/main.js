@@ -7,7 +7,8 @@ import DataBus from './template/databus'
 import SkillBus from './template/skillbus'
 import CreateRole from './createrole'
 import actorimp from './actorimp'
-import template from './template/template'
+import Template from './template/template'
+import SceneManager from './scenemanager'
 
 import {
   canvasTextAutoLine,
@@ -19,7 +20,8 @@ let ctx = canvas.getContext('2d')
 let usedata = new DataBus()
 let skilldata = new SkillBus()
 let tx = canvas.width * 1 / 12
-let tempman = new template()
+let tempman = new Template()
+let scenemanager = new SceneManager()
 
 /**
  * 游戏主函数
@@ -37,7 +39,6 @@ export default class Main {
       this.bindLoop,
       canvas
     )
-    this.battledata = []
     this.skillspos = [{
         x: canvas.width * 1 / 12,
         y: canvas.height - 120
@@ -59,7 +60,26 @@ export default class Main {
     this.playerA = new actorimp(0, usedata)
     this.playerB = new actorimp(1, tempman.npc[0])
     this.result = 0
-    this.stop = false
+    this.stopflag = false
+    this.battledata = []
+
+    this.restart = function () {
+      this.x = 0
+      this.y = 0
+      this.playerA = new actorimp(0, usedata)
+      this.playerB = new actorimp(1, tempman.npc[0])
+      this.result = 0
+      this.stopflag = false
+      this.battledata = []
+      window.requestAnimationFrame(
+        this.bindLoop,
+        canvas
+      )
+    }
+
+    this.stop = function() {
+      this.stopflag = true
+    }
   }
 
   initEvent() {
@@ -82,18 +102,12 @@ export default class Main {
 
   //check skill
   checkskill(x, y) {
-    if (this.stop == false) {
+    if (this.stopflag == false) {
       if (this.result == 0) {
         for (var i = 0; i < usedata.activeskills.length; i++) {
           let tmpx = this.skillspos[i].x
           let tmpy = this.skillspos[i].y
           if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
-            /*
-            this.battledata.push( this.playername + "的[" + this.skills[i].name + "]对木桩造成了" + this.skills[i].damage + "伤害")
-            while (this.battledata.length > 14) {
-              this.battledata.shift()
-            }*/
-            //this.battledata.push(skilldata.work(usedata.activeskills[i].id, this.playerA, '木桩'))
             this.battledata = []
             var tmpd = skilldata.work(usedata.activeskills[i].id, this.playerA, this.playerB)
             for (var k = 0; k < tmpd.length; k++) {
@@ -128,21 +142,20 @@ export default class Main {
             for (var k = 0; k < tmpd.length; k++) {
               this.battledata.push(tmpd[k])
             }
-            /*
-            while (this.battledata.length > 14) {
-              this.battledata.shift()
-            }
-            */
             break;
           }
         }
       } else {
-        this.stop = true
-        var res = {
-          nickName: this.playerA.name
+        scenemanager.stopmain()
+        if (scenemanager.hascreaterole()) {
+          scenemanager.restartcreaterole()
+        } else {
+          var res = {
+            nickName: this.playerA.name
+          }
+          var p = new CreateRole(res)
+          scenemanager.addcreaterole(p)
         }
-        new CreateRole(res)
-        delete this
       }
     }
   }
@@ -173,14 +186,8 @@ export default class Main {
     y += 20
 
     for (var i = 0; i < this.battledata.length; i++) {
-      //ctx.fillText(this.battledata[i], tx, 90 + i * 20)
       y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
     }
-    /*
-    for (var i = 0; i < this.skills.length; i++) {
-      ctx.fillText(this.skills[i].name, this.skills[i].x, this.skills[i].y)
-    }
-    */
     for (var i = 0; i < usedata.activeskills.length; i++) {
       ctx.fillText(usedata.activeskills[i].name, this.skillspos[i].x, this.skillspos[i].y)
     }
@@ -191,7 +198,7 @@ export default class Main {
 
   // 实现游戏帧循环
   loop() {
-    if (this.stop == false) {
+    if (this.stopflag == false) {
       this.update()
       this.render()
 

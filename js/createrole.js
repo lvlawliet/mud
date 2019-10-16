@@ -1,12 +1,14 @@
 import Main from './main'
 import DataBus from './template/databus'
 import SkillBus from './template/skillbus'
+import SceneManager from './scenemanager'
 
 import { canvasTextAutoLine } from './util/utilf'
 
 let ctx = canvas.getContext('2d')
 let usedata = new DataBus()
 let skilldata = new SkillBus()
+let scenemanager = new SceneManager()
 let tx = canvas.width * 1 / 12
 
 
@@ -27,8 +29,21 @@ export default class CreateRole {
       this.bindLoop,
       canvas
     )
-    this.stop = false
+    this.stopflag = false
     this.initEvent()
+    
+    this.stop = function () {
+      this.stopflag = true
+    }
+
+    this.restart = function () {
+      this.stopflag = false
+      this.page = 0
+      window.requestAnimationFrame(
+        this.bindLoop,
+        canvas
+      )
+    }
   }
 
   render() {
@@ -41,11 +56,12 @@ export default class CreateRole {
   }
 
   checkpoint(x, y) {
-    console.log("123")
-    if (this.page==0) {
-      this.checkpage1(x,y)
-    } else if (this.page == 1) {
-      this.checkpage2(x, y)
+    if (this.stopflag == false) {
+      if (this.page == 0) {
+        this.checkpage1(x, y)
+      } else if (this.page == 1) {
+        this.checkpage2(x, y)
+      }
     }
   }
   
@@ -80,10 +96,13 @@ export default class CreateRole {
       flag = true
     }
     if (flag == true) {
-      this.stop = true
-      this.page++
-      new Main()
-      delete this
+      scenemanager.stopcreaterole()
+      if (scenemanager.hasmain()) {
+        scenemanager.restartmain()
+      } else {
+        var p = new Main()
+        scenemanager.addmain(p)
+      }
     }
   }
 
@@ -147,7 +166,7 @@ export default class CreateRole {
   }
 
   loop() {
-    if (this.stop == false) {
+    if (this.stopflag == false) {
       this.update()
       this.render()
       window.requestAnimationFrame(

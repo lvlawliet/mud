@@ -1,6 +1,6 @@
 let instance
 
-export default class template {
+export default class Template {
   constructor() {
     if (instance)
       return instance
@@ -10,7 +10,7 @@ export default class template {
       0: {
         id: 0,
         name: '刀',
-        sourcename: '刀气',
+        sourcename: '狂刀值',
         sourcemax: 100,
         sourceinit: 0,
       },

@@ -1,7 +1,7 @@
-import template from './template/template'
+import Template from './template/template'
 import SkillBus from './template/skillbus'
 
-let tempman = new template()
+let tempman = new Template()
 let skilldata = new SkillBus()
 
 export default class actorimp {
@@ -45,6 +45,9 @@ export default class actorimp {
     for (var key in this.buffs) {
       if (key == 1) {
         tmp += 10
+      } else
+      if (key == 7) {
+        tmp += 15
       }
     }
     return tmp
@@ -55,6 +58,9 @@ export default class actorimp {
     for (var key in this.buffs) {
       if (key == 2) {
         tmp += 10
+      } else
+      if (key == 7) {
+        tmp += 15
       }
     }
     return tmp
@@ -65,6 +71,12 @@ export default class actorimp {
     for (var key in this.buffs) {
       if (key == 3) {
         tmp += 10
+      } else
+      if (key == 6) {
+        tmp += this.buffs[key].number
+      } else
+      if (key == 7) {
+        tmp += 15
       }
     }
     return tmp
@@ -74,6 +86,9 @@ export default class actorimp {
     for (var key in this.buffs) {
       if (key == 4) {
         tmp += 10
+      } else
+      if (key == 7) {
+        tmp += 15
       }
     }
     return tmp
@@ -84,6 +99,9 @@ export default class actorimp {
     for (var key in this.buffs) {
       if (key == 5) {
         tmp += 10
+      } else
+      if (key == 7) {
+        tmp += 15
       }
     }
     return tmp
@@ -117,8 +135,28 @@ export default class actorimp {
     return 2 * this.getbili()
   }
 
+  getextrahit() {
+    var tmp = 0
+    for (var key in this.buffs) {
+      if (key == 6 && this.getbuffnumber(key) >= 8) {
+        tmp += 5
+      }
+    }
+    return tmp
+  }
+
+  getextracrit() {
+    var tmp = 0
+    for (var key in this.buffs) {
+      if (key == 6 && this.getbuffnumber(key) >= 15) {
+        tmp += 10
+      }
+    }
+    return tmp
+  }
+
   getcrit() {
-    return 5 + this.getdingli() / 5
+    return 5 + this.getextracrit() + this.getdingli() / 5
   }
 
   getphydefence() {
@@ -173,6 +211,39 @@ export default class actorimp {
       this.hpnow += e
     }
     return realadd
+  }
+
+  addbuff(buffid, number) {
+    var buff = skilldata.buffs[buffid]
+    if (this.buffs.hasOwnProperty(buff.id) == false) {
+      this.buffs[buff.id] = {
+        buff: buff,
+        number: number,
+        round: buff.round
+      }
+    } else {
+      this.buffs[buff.id].number += number
+      if (this.buffs[buff.id].number > buff.max) {
+        this.buffs[buff.id].number = buff.max
+        this.buffs[buff.id].round = buff.round
+      }
+    }
+  }
+
+  removebuff(id, number) {
+    if (this.buffs.hasOwnProperty(id)) {
+      this.buffs[id].number -= number
+      if (this.buffs[id].number <= 0) {
+        delete this.buffs[id]
+      }
+    }
+  }
+
+  getbuffnumber(id) {
+    if (this.buffs.hasOwnProperty(id)) {
+      return this.buffs[id].number
+    }
+    return 0
   }
 
 }

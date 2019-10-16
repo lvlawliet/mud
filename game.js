@@ -1,9 +1,17 @@
 import './js/libs/weapp-adapter'
 import './js/libs/symbol'
-import CreateRole from './js/createrole'
+import SceneManager from './js/scenemanager'
 
 import Ulogin from './js/ulogin'
-new Ulogin()
+//new Ulogin()
+let scenemanager = new SceneManager()
+
+if (scenemanager.hasulogin()) {
+  scenemanager.restartulogin()
+} else {
+  var p = new Ulogin()
+  scenemanager.addulogin(p)
+}
 /*
 var res = {
   nickName: 'fuck'
