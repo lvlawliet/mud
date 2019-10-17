@@ -9,11 +9,13 @@ import CreateRole from './createrole'
 import actorimp from './actorimp'
 import Template from './template/template'
 import SceneManager from './scenemanager'
+import Fight from './fight'
 
 import {
   canvasTextAutoLine,
   canvasTextRight,
-  canvasTextCenter
+  canvasTextCenter,
+  canvasTextSplit,
 } from './util/utilf'
 
 let ctx = canvas.getContext('2d')
@@ -22,6 +24,7 @@ let skilldata = new SkillBus()
 let tx = canvas.width * 1 / 12
 let tempman = new Template()
 let scenemanager = new SceneManager()
+let fightman = new Fight()
 
 /**
  * 游戏主函数
@@ -58,7 +61,7 @@ export default class Main {
     ]
     this.initEvent()
     this.playerA = new actorimp(0, usedata)
-    this.playerB = new actorimp(1, tempman.npc[1])
+    this.playerB = new actorimp(1, tempman.npc[1000])
     this.result = 0
     this.stopflag = false
     this.battledata = []
@@ -67,7 +70,7 @@ export default class Main {
       this.x = 0
       this.y = 0
       this.playerA = new actorimp(0, usedata)
-      this.playerB = new actorimp(1, tempman.npc[0])
+      this.playerB = new actorimp(1, tempman.npc[1000])
       this.result = 0
       this.stopflag = false
       this.battledata = []
@@ -110,13 +113,13 @@ export default class Main {
           if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
             this.battledata = []
             this.battledata.push("Left")
-            var tmpd = skilldata.work(usedata.activeskills[i].id, this.playerA, this.playerB)
+            var tmpd = fightman.work(usedata.activeskills[i].id, this.playerA, this.playerB)
             for (var k = 0; k < tmpd.length; k++) {
               this.battledata.push(tmpd[k])
             }
 
             // checkalive
-            var tmpa = skilldata.checkalive(this.playerA, this.playerB)
+            var tmpa = fightman.checkalive(this.playerA, this.playerB)
             var result = tmpa.result
             var tmpd = tmpa.info
 
@@ -139,9 +142,37 @@ export default class Main {
             }
             // ai
             this.battledata.push("Right")
+            var skill = this.playerB.ai.work(this.playerB, this.playerA)
+            var tmpd = fightman.work(skill.id, this.playerB, this.playerA)
+            for (var k = 0; k < tmpd.length; k++) {
+              this.battledata.push(tmpd[k])
+            }
+
+            // checkalive
+            var tmpa = fightman.checkalive(this.playerA, this.playerB)
+            var result = tmpa.result
+            var tmpd = tmpa.info
+
+            for (var k = 0; k < tmpd.length; k++) {
+              this.battledata.push(tmpd[k])
+            }
+            if (result != 0) {
+              this.result = result
+              if (result == 1) {
+                this.battledata.push(this.playerA.name + "获胜")
+              } else
+              if (result == 2) {
+                this.battledata.push(this.playerB.name + "获胜")
+              } else
+              if (result == 3) {
+                this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+              }
+              this.battledata.push("点击任意地方重新开始")
+              break;
+            }
 
             this.battledata.push("Middle")
-            var tmpd = skilldata.endround(this.playerA, this.playerB)
+            var tmpd = fightman.endround(this.playerA, this.playerB)
             for (var k = 0; k < tmpd.length; k++) {
               this.battledata.push(tmpd[k])
             }
@@ -183,7 +214,9 @@ export default class Main {
     canvasTextAutoLine(this.playerA.getsourcename() + this.playerA.sourcenow + '/' + this.playerA.getsourcemax(), canvas, tx, y, 20)
     canvasTextRight(this.playerB.getsourcename() + this.playerB.sourcenow + '/' + this.playerB.getsourcemax(), canvas, tx, y, 20)
     y += 20
-
+    // split
+    canvasTextSplit(canvas, tx, y)
+    y += 20
     // main word
     canvasTextAutoLine('战斗记录:', canvas, tx, y, tx)
     y += 20
@@ -193,10 +226,14 @@ export default class Main {
         y = canvasTextAutoLine("先手", canvas, tx, y, 20)
       } else
       if (this.battledata[i] == "Right") {
+        canvasTextSplit(canvas, tx, y)
+        y += 20
         canvasTextRight("后手", canvas, tx, y, 20)
         y += 20
       } else
       if (this.battledata[i] == "Middle") {
+        canvasTextSplit(canvas, tx, y)
+        y += 20
         canvasTextCenter("尾声", canvas, tx, y, 20)
         y += 20
       } else {

@@ -49,6 +49,24 @@ export default class SkillBus {
         name: '庐山不动',
         max: 1,
         round: 2,
+      },
+      8: {
+        id: 8,
+        name: '玄武·刺',
+        max: 1,
+        round: 2,
+      },
+      9: {
+        id: 9,
+        name: '玄武·愈',
+        max: 1,
+        round: 2,
+      },
+      10: {
+        id: 10,
+        name: '玄武·护',
+        max: 1,
+        round: 2,
       }
     }
 
@@ -208,351 +226,39 @@ export default class SkillBus {
         other: 0,
         type: 'passive',
       },
+      1002: {
+        id: 1002,
+        name: "玄武咬",
+        cost: 0,
+        des: '造成小量物理伤害，并产生一只小玄武',
+        damagebase: 50,
+        damageratiomin: 1.5,
+        damageratiomax: 2.1,
+        other: 0,
+        type: 'damage',
+      },
+      1003: {
+        id: 1003,
+        name: "玄武盾",
+        cost: 0,
+        des: '随机获得一种神龟祝福，小玄武越多效果越强大',
+        damagebase: 0,
+        damageratiomin: 0,
+        damageratiomax: 20,
+        other: 0,
+        type: 'other',
+      },
+      1004: {
+        id: 1004,
+        name: "一只玄武入海了",
+        cost: 10,
+        des: '一只只小玄武冲向敌人，在重重打击敌人后爬入大海',
+        damagebase: 500,
+        damageratiomin: 5,
+        damageratiomax: 25,
+        other: 0,
+        type: 'damage',
+      }
     }
   }
-
-  checkcost(player, skill) {
-    if (player.sourcenow < skill.cost) {
-      return false
-    }
-    player.sourcenow -= skill.cost
-    return true
-  }
-
-  checkhit(skill, cast, target) {
-    if (skill.type != 'damage') {
-      return true;
-    }
-    var hitpercent = 75 + (cast.getshenfa() - target.getshenfa()) / 8 + cast.getextrahit()
-    var rand = Math.floor(Math.random() * 100)
-    if (hitpercent >= rand) {
-      return true
-    }
-    return false
-  }
-
-  calculatedamage(skill, cast, target) {
-    var type = 0
-    var more = (Math.random() * (skill.damageratiomax - skill.damageratiomin) + skill.damageratiomin) * cast.getphyattack()
-    var damage = Math.floor(skill.damagebase + more)
-    damage -= target.getphydefence()
-    // crit
-    var critpercent = cast.getcrit()
-    var rand = Math.floor(Math.random() * 100)
-    if (critpercent >= rand) {
-      type = 1
-      damage = Math.floor(damage * 1.5)
-    }
-    target.hpadd(-damage)
-    return {
-      0: type,
-      1: damage
-    }
-  }
-
-  endround(cast, target) {
-    var dinfo = []
-    // do passive
-    for (var key in cast.passiveskills) {
-      var effect = this.dopassiveskills(cast.passiveskills[key], cast, target)
-      for (var i = 0; i < effect.length; i++) {
-        dinfo.push(effect[i])
-      }
-    }
-    // do buff
-    for (var key in cast.buffs) {
-      var buff = this.buffs[key]
-      if (cast.buffs[key].round != -99) {
-        cast.buffs[key].round--
-          if (cast.buffs[key].round <= 0) {
-            delete cast.buffs[key]
-            dinfo.push("[" + buff.name + "]" + "从" + cast.name + "身上消失")
-          }
-      }
-    }
-    // do passive
-    for (var key in target.passiveskills) {
-      var effect = this.dopassiveskills(target.passiveskills[key], target, cast)
-      for (var i = 0; i < effect.length; i++) {
-        dinfo.push(effect[i])
-      }
-    }
-    // do buff
-    for (var key in target.buffs) {
-      if (target.buffs[key].round != -99) {
-        var buff = this.buffs[key]
-        target.buffs[key].round--
-          if (target.buffs[key].round <= 0) {
-            delete target.buffs[key]
-            dinfo.push("[" + buff.name + "]" + "从" + target.name + "身上消失")
-          }
-      }
-    }
-    return dinfo
-  }
-
-  // check alive
-  checkalive(playerA, playerB) {
-    var dinfo = []
-    if (playerA.hpnow <= 0) {
-      dinfo.push(playerA.name + "被" + playerB.name + "打成重伤")
-      for (var key in playerA.passiveskills) {
-        var effect = this.dodeadeffect(playerA.passiveskills[key], playerA, playerB)
-        for (var i = 0; i < effect.length; i++) {
-          dinfo.push(effect[i])
-        }
-      }
-    }
-    if (playerB.hpnow <= 0) {
-      dinfo.push(playerB.name + "被" + playerA.name + "打成重伤")
-      for (var key in playerB.passiveskills) {
-        var effect = this.dodeadeffect(playerB.passiveskills[key], playerB, playerA)
-        for (var i = 0; i < effect.length; i++) {
-          dinfo.push(effect[i])
-        }
-      }
-    }
-    if (playerA.hpnow <= 0 && playerB.hpnow <= 0) {}
-    if (playerA.hpnow <= 0) {
-      return {
-        result: 2,
-        info: dinfo
-      }
-    }
-    if (playerB.hpnow <= 0) {
-      return {
-        result: 1,
-        info: dinfo
-      }
-    }
-    return {
-      result: 0,
-      info: dinfo
-    }
-  }
-
-  // skill main work
-  work(id, cast, target) {
-    var dinfo = []
-    var skill = this.skills[id]
-    // source 
-    if (this.checkcost(cast, skill) == false) {
-      dinfo.push(cast.getsourcename() + "不足以释放[" + skill.name + "]")
-      return dinfo
-    }
-    // skill replace
-    skill = this.checkreplace(skill, cast, target)
-    // hit or not
-    var type = -1
-    if (this.checkhit(skill, cast, target) == false) {
-      //dinfo.push(target.name + "轻轻侧身，躲过了" + cast.name + "的[" + skill.name + "]")
-      dinfo.push(cast.name + "手上略感吃力," + "[" + skill.name + "]并未击中" + target.name)
-    } else {
-      var bdes = this.bigskilldes(skill, cast, target)
-      for (var i = 0; i < bdes.length; i++) {
-        dinfo.push(bdes[i])
-      }
-      if (skill.type == 'damage') {
-        var re = this.calculatedamage(skill, cast, target, type)
-        type = re[0]
-        var damage = re[1]
-        if (type == 0) {
-          dinfo.push(cast.name + "的[" + skill.name + "]对" + target.name + "造成了" + damage + "伤害")
-        } else {
-          dinfo.push(cast.name + "的[" + skill.name + "]对" + target.name + "产生了致命一击，造成了" + damage + "伤害")
-        }
-      } else if (skill.type == 'other') {
-        var tmpd = this.dootherskill(skill, cast, target)
-        for (var i = 0; i < tmpd.length; i++) {
-          dinfo.push(tmpd[i])
-        }
-      }
-    }
-    // do first use buff
-    var effect = this.dofirstusebuff(skill, cast, target, type)
-    for (var i = 0; i < effect.length; i++) {
-      dinfo.push(effect[i])
-    }
-    // do buff effect after damage
-    var effect = this.dobuffeffectafterdamage(skill, cast, target, type)
-    for (var i = 0; i < effect.length; i++) {
-      dinfo.push(effect[i])
-    }
-    // effect
-    var effect = this.doeffectafterdamage(skill, cast, target, type)
-    for (var i = 0; i < effect.length; i++) {
-      dinfo.push(effect[i])
-    }
-    return dinfo
-  }
-
-  // do not damage or heal skill
-  dootherskill(skill, cast, target) {
-    var dinfo = []
-    if (skill.id == 3) {
-      var buff = this.buffs[7]
-      cast.addbuff(buff.id, 1)
-      dinfo.push(cast.name + "通过[" + skill.name + "]获得了[" + buff.name + "]的状态")
-    }
-    // skill_103
-    if (skill.id == 103) {
-      while (cast.sourcenow >= 20) {
-        cast.sourcenow -= 20
-        var rand = Math.floor(Math.random() * 5) + 1
-        var buff = this.buffs[rand]
-        cast.addbuff(buff.id, 1)
-        dinfo.push(cast.name + "通过[" + skill.name + "]消耗了20点剑意并领悟了[" + buff.name + "]")
-      }
-    }
-    return dinfo
-  }
-
-  // do first use buff
-  dofirstusebuff(skill, cast, target, type) {
-    var dinfo = []
-    if (skill.id == 4) {
-      var buff = this.buffs[6]
-      var tmp = cast.getbuffnumber(6)
-      var tmps = cast.sourceadd(tmp * 4)
-      cast.removebuff(6, 99)
-      dinfo.push(cast.name + "通过[" + skill.name + "]消耗了全部[" + buff.name + "]，并回复了" + tmps + "狂刀值")
-    }
-    return dinfo
-  }
-
-  // do buff effect after damage
-  dobuffeffectafterdamage(skill, cast, target, type) {
-    var dinfo = []
-    for (var key in cast.buffs) {
-      if (key == 6 && type != -1) {
-        var num = cast.buffs[key].number
-        var tmps = cast.sourceadd(num)
-        dinfo.push(cast.name + "通过[" + this.buffs[key].name + "]回复了" + tmps + "点狂刀值")
-      }
-    }
-    return dinfo
-  }
-
-  // do skill effect after damage
-  doeffectafterdamage(skill, cast, target, type) {
-    var dinfo = []
-    // skill_1
-    if (skill.id == 1 && type != -1) {
-      var tmps = 0
-      if (type == 0) {
-        tmps = cast.sourceadd(20)
-      } else {
-        tmps = cast.sourceadd(40)
-      }
-      dinfo.push(cast.name + "的[" + skill.name + "]造成伤害产生了" + tmps + "点狂刀值")
-      var buff = this.buffs[6]
-      cast.addbuff(buff.id, 1)
-      dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了一层[" + buff.name + "]")
-    } else
-      // skill_2
-      if (skill.id == 2) {
-        var rand = Math.floor(Math.random() * 100)
-        if (rand < 25) {
-          var rand2 = Math.floor(Math.random() * 100)
-          if (rand2 < 50) {
-            var buff = this.buffs[6]
-            cast.addbuff(buff.id, 3)
-            dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了三层[" + buff.name + "]")
-          } else {
-            var tmps = cast.sourceadd(skill.cost)
-            dinfo.push(cast.name + "的[" + skill.name + "]返还了所有消耗的狂刀值")
-          }
-        }
-      } else
-        // skill_101
-        if (skill.id == 101) {
-          var rand = Math.floor(Math.random() * 5) + 1
-          var buff = this.buffs[rand]
-          cast.addbuff(buff.id, 1)
-          dinfo.push(cast.name + "的[" + skill.name + "]对自身产生了[" + buff.name + "]")
-        } else
-          // skill_102
-          if (skill.id == 102) {
-            var rand = Math.floor(Math.random() * 100)
-            if (rand < 20) {
-              for (var i = 1; i <= 5; i++) {
-                if (cast.buffs.hasOwnProperty(i) == false) {
-                  var buff = this.buffs[i]
-                  cast.addbuff(buff.id, 1)
-                  dinfo.push(cast.name + "通过[" + skill.name + "]领悟了[" + buff.name + "]")
-                  break;
-                }
-              }
-            }
-          } else
-            // skill_106
-            if (skill.id == 106) {
-              dinfo.push(cast.name + "的[" + skill.name + "]消耗掉了全部剑声")
-              for (var i = 1; i <= 5; i++) {
-                //delete cast.buffs[i]
-                cast.removebuff(i, 1)
-              }
-            }
-
-    return dinfo
-  }
-
-  // do passive
-  dopassiveskills(skill, cast, target) {
-    var dinfo = []
-    if (skill.id == 105) {
-      var tmps = cast.sourceadd(20)
-      dinfo.push(cast.name + "通过[" + skill.name + "]恢复了" + tmps + "点剑意")
-    } else
-    if (skill.id == 200) {
-      var tmps = cast.sourceadd(40) 
-      dinfo.push(cast.name + "恢复了" + tmps + "点影")
-    } else
-    if (skill.id == 1000) {
-      var tmps = cast.hpadd(1 * cast.getgengu())
-      dinfo.push(cast.name + "受到玄武真道教宗的[" + skill.name + "]祝福，恢复了" + tmps + "点生命")
-
-    }
-    return dinfo
-  }
-
-  // check skill replace
-  checkreplace(skill, cast, target) {
-    if (skill.id == 104) {
-      var flag = true
-      for (var i = 1; i <= 5; i++) {
-        if (cast.buffs.hasOwnProperty(i) == false) {
-          flag = false
-          break;
-        }
-      }
-      if (flag == true) {
-        return this.skills[106]
-      } else {
-        return skill
-      }
-    }
-    return skill
-  }
-
-  dodeadeffect(skill, cast, target) {
-    var dinfo = []
-    if (skill.id == 1001) {
-      if (cast.hpnow > -600) {
-        cast.hpnow = cast.gethpmax()
-        dinfo.push(cast.name + "受到的伤害并未至死，并且受到玄武真神[" + skill.name + "]神力的庇护，伤势痊愈。玄武真道，齐天寿甲！")
-      }
-    }
-    return dinfo
-  }
-
-  // big skill extra describe
-  bigskilldes(skill, cast, target) {
-    var dinfo = []
-    if (skill.id == 106) {
-      dinfo.push(skill.des)
-    }
-    return dinfo
-  }
-
 }

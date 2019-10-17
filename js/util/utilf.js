@@ -39,3 +39,15 @@ export function canvasTextCenter(str, canvas, initX, initY, rightX) {
   initX = canvasWidth / 2 - lineWidth / 2
   ctx.fillText(str, initX, initY);
 }
+
+export function canvasTextSplit(canvas, initX, initY) {
+  var ctx = canvas.getContext('2d')
+  var lineWidth = 0;
+  var str = ""
+  var canvasWidth = canvas.width - 2 * initX;
+  while (lineWidth < canvasWidth) {
+    str += "-"
+    lineWidth += ctx.measureText("-").width;
+  }
+  ctx.fillText(str, initX, initY);
+}

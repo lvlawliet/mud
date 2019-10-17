@@ -12,8 +12,3 @@ if (scenemanager.hasulogin()) {
   var p = new Ulogin()
   scenemanager.addulogin(p)
 }
-/*
-var res = {
-  nickName: 'fuck'
-}
-new CreateRole(res)*/

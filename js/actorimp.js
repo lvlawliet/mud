@@ -1,8 +1,10 @@
 import Template from './template/template'
 import SkillBus from './template/skillbus'
+import AiRegister from './template/airegister'
 
 let tempman = new Template()
 let skilldata = new SkillBus()
+let airegister = new AiRegister()
 
 export default class actorimp {
   constructor(type, e) {
@@ -34,6 +36,7 @@ export default class actorimp {
       for (var i = 0; i < e.passiveskills.length; i++) {
         this.passiveskills.push(skilldata.skills[e.passiveskills[i]])
       }
+      this.ai = airegister.ar[e.ai]
     }
     this.hpnow = this.gethpmax()
     this.sourcenow = this.getsourceinit();
