@@ -40,7 +40,7 @@ export default class Template {
         name: '玄武魄',
         sourcename: '玄武',
         sourcemax: 20,
-        sourceinit: 18,
+        sourceinit: 0,
       },
     }
 
@@ -82,7 +82,7 @@ export default class Template {
         bili: 10,
         dingli: 20,
         gengu: 20,
-        hpbase: 2000,
+        hpbase: 2500,
         activeskills: [1002, 1003, 1004],
         passiveskills: [],
         ai: "jiayu",
