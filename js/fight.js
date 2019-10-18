@@ -27,7 +27,10 @@ export default class Fight {
     if (skill.type != 'damage') {
       return true;
     }
-    var hitpercent = 75 + (cast.getshenfa() - target.getshenfa()) / 8 + cast.getextrahit()
+    if (typeof(skill.notmiss) != "undefined") {
+      return true
+    }
+    var hitpercent = 85 + (cast.getshenfa() - target.getshenfa()) / 8 + cast.getextrahit()
     var rand = Math.floor(Math.random() * 100)
     if (hitpercent >= rand) {
       return true
@@ -53,6 +56,8 @@ export default class Fight {
       'type': type,
       'damage': damage,
     }
+    temp = rs.sr[skill.id].doskilleffectbeforebedamage(skill, cast, target, temp)
+    temp = this.dobuffandpassiveeffectbeforebedamage(skill, cast, target, temp)
     temp = this.dobuffandpassiveeffectbeforebedamage(skill, target, cast, temp)
     target.hpadd(-temp.damage)
     return {
@@ -78,15 +83,16 @@ export default class Fight {
         if (cast.buffs[key].round <= 0) {
           delete cast.buffs[key]
           dinfo.push("[" + buff.name + "]" + "从" + cast.name + "身上消失")
+          var effect = br.br[key].doeffectafterdelete(cast)
+          for (var i = 0; i < effect.length; i++) {
+            dinfo.push(effect[i])
+          }
         }
       }
     }
     // do passive
     for (var key in target.passiveskills) {
       var effect = this.dopassiveskills(target.passiveskills[key], target, cast)
-      for (var i = 0; i < effect.length; i++) {
-        dinfo.push(effect[i])
-      }
     }
     // do buff
     for (var key in target.buffs) {
@@ -96,6 +102,10 @@ export default class Fight {
         if (target.buffs[key].round <= 0) {
           delete target.buffs[key]
           dinfo.push("[" + buff.name + "]" + "从" + target.name + "身上消失")
+          var effect = br.br[key].doeffectafterdelete(target)
+          for (var i = 0; i < effect.length; i++) {
+            dinfo.push(effect[i])
+          }
         }
       }
     }

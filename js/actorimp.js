@@ -46,12 +46,6 @@ export default class actorimp {
   getextratizhi() {
     var tmp = 0
     for (var key in this.buffs) {
-      if (key == 1) {
-        tmp += 10
-      } else
-      if (key == 7) {
-        tmp += 15
-      }
     }
     return tmp
   }
@@ -60,9 +54,6 @@ export default class actorimp {
     var tmp = 0
     for (var key in this.buffs) {
       if (key == 2) {
-        tmp += 10
-      } else
-      if (key == 7) {
         tmp += 15
       }
     }
@@ -73,13 +64,10 @@ export default class actorimp {
     var tmp = 0
     for (var key in this.buffs) {
       if (key == 3) {
-        tmp += 10
+        tmp += 15
       } else
       if (key == 6) {
         tmp += this.buffs[key].number
-      } else
-      if (key == 7) {
-        tmp += 15
       }
     }
     return tmp
@@ -88,9 +76,6 @@ export default class actorimp {
     var tmp = 0
     for (var key in this.buffs) {
       if (key == 4) {
-        tmp += 10
-      } else
-      if (key == 7) {
         tmp += 15
       }
     }
@@ -100,12 +85,6 @@ export default class actorimp {
   getextragengu() {
     var tmp = 0
     for (var key in this.buffs) {
-      if (key == 5) {
-        tmp += 10
-      } else
-      if (key == 7) {
-        tmp += 15
-      }
     }
     return tmp
   }
@@ -141,6 +120,9 @@ export default class actorimp {
   getextrahit() {
     var tmp = 0
     for (var key in this.buffs) {
+      if (key == 5) {
+        tmp += 5
+      }
       if (key == 6 && this.getbuffnumber(key) >= 8) {
         tmp += 5
       }
@@ -151,6 +133,9 @@ export default class actorimp {
   getextracrit() {
     var tmp = 0
     for (var key in this.buffs) {
+      if (key == 1) {
+        tmp += 10
+      } else
       if (key == 6 && this.getbuffnumber(key) >= 15) {
         tmp += 10
       }

@@ -13,7 +13,7 @@ export default class buff_9 extends buff_template {
     var dinfo = []
     if (tmppassvalue.type != -1) {
       var percent = cast.sourcenow
-      var rand = Math.random() * 2
+      var rand = Math.random() * 1 + 1.5
       var heal = Math.floor((50 + rand * cast.getgengu()) * (1 + percent / 10))
       var tmps = cast.hpadd(heal)
       dinfo.push(target.name + "随被伤及，但受到[" + skilldata.buffs[9].name + "]祝福，回复了" + tmps + "点血量");

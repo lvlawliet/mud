@@ -8,7 +8,10 @@ export default class skill_template {
     return dinfo
   }
 
-
+  doskilleffectbeforebedamage(skill, cast, target, tmppassvalue) {
+    return tmppassvalue
+  }
+  
   // do first use buff
   dofirstusebuff(skill, cast, target, tmppassvalue) {
     var dinfo = []

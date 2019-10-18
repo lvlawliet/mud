@@ -13,7 +13,7 @@ export default class buff_8 extends buff_template {
     var dinfo = []
     if (tmppassvalue.type != -1) {
       var percent = cast.sourcenow
-      var damage = Math.floor(tmppassvalue.damage * (5 + percent) / 10)
+      var damage = Math.floor(tmppassvalue.damage * (5 + percent) / 15)
       target.hpadd(-damage)
       dinfo.push(target.name + "被" + cast.name + "的[" + skilldata.buffs[8].name + "]反弹了" + damage + "点伤害");
     }

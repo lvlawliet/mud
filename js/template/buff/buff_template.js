@@ -17,5 +17,11 @@ export default class buff_template {
     var dinfo = []
     return dinfo
   }
+
+  // do buff effect after delete
+  doeffectafterdelete(cast) {
+    var dinfo = []
+    return dinfo
+  }
   
 }

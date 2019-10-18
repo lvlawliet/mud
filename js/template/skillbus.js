@@ -251,13 +251,14 @@ export default class SkillBus {
       1004: {
         id: 1004,
         name: "一只玄武入海了",
-        cost: 10,
+        cost: 20,
         des: '一只只小玄武冲向敌人，在重重打击敌人后爬入大海',
-        damagebase: 500,
+        damagebase: 800,
         damageratiomin: 5,
-        damageratiomax: 25,
+        damageratiomax: 30,
         other: 0,
         type: 'damage',
+        notmiss: 1,
       }
     }
   }

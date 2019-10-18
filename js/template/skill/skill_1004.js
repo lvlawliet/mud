@@ -14,6 +14,13 @@ export default class skill_1004 extends skill_template {
     return dinfo
   }
 
+  doskilleffectbeforebedamage(skill, cast, target, tmppassvalue) {
+    console.log(tmppassvalue.damage)
+    var realdamage = tmppassvalue.damage + Math.floor(Math.random() * 1000)
+    tmppassvalue.damage = realdamage
+    return tmppassvalue
+  }
+
 
   // do first use buff
   dofirstusebuff(skill, cast, target, tmppassvalue) {

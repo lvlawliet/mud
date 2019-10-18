@@ -11,7 +11,7 @@ export default class ai_jiayu extends ai_template {
   // do buff effect after damage
   work(cast, target) {
     var flag = false;
-    if (cast.sourcenow == 10) {
+    if (cast.sourcenow == 20) {
       return skilldata.skills[1004]
     }
     for (var key in cast.buffs) {
