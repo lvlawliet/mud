@@ -23,6 +23,9 @@ export default class DataBus {
       }
     this.activeskills = []
     this.passiveskills = []
+    this.method = null
+    this.skillbag = []
+    this.methodbag = []
 
     // const string
     this.pro2string = {
@@ -118,15 +121,8 @@ export default class DataBus {
   }
   
   saveskill(e) {
-    this.activeskills = []
-    this.passiveskills = []
     for (var i = 0; i < e.length; i++) {
-      var skill = skilldata.skills[e[i]]
-      if (skill.type != 'passive') {
-        this.activeskills.push(skill)
-      } else {
-        this.passiveskills.push(skill)
-      }
+      this.skillbag.push(skilldata.skills[e[i]])
     }
   }
 

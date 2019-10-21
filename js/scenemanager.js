@@ -49,6 +49,23 @@ export default class SceneManager {
     this.scene['createrole'].stop()
   }
 
+  // balltescene scene
+  addballtescene(e) {
+    this.scene['balltescene'] = e
+  }
+
+  hasballtescene() {
+    return this.scene.hasOwnProperty('balltescene')
+  }
+
+  restartballtescene() {
+    this.scene['balltescene'].restart()
+  }
+
+  stopballtescene() {
+    this.scene['balltescene'].stop()
+  }
+
   // main scene
   addmain(e) {
     this.scene['main'] = e
@@ -65,4 +82,5 @@ export default class SceneManager {
   stopmain() {
     this.scene['main'].stop()
   }
+
 }

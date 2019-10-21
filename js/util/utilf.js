@@ -51,3 +51,10 @@ export function canvasTextSplit(canvas, initX, initY) {
   }
   ctx.fillText(str, initX, initY);
 }
+
+export function sleep(delay) {
+  var start = (new Date()).getTime();
+  while ((new Date()).getTime() - start < delay) {
+    continue;
+  }
+}

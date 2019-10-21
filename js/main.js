@@ -1,16 +1,5 @@
-import Player from './player/index'
-import Enemy from './npc/enemy'
-import BackGround from './runtime/background'
-import GameInfo from './runtime/gameinfo'
-import Music from './runtime/music'
-import DataBus from './template/databus'
-import SkillBus from './template/skillbus'
-import CreateRole from './createrole'
-import actorimp from './actorimp'
 import Template from './template/template'
-import SceneManager from './scenemanager'
-import Fight from './fight'
-
+import DataBus from './template/databus'
 import {
   canvasTextAutoLine,
   canvasTextRight,
@@ -20,18 +9,19 @@ import {
 
 let ctx = canvas.getContext('2d')
 let usedata = new DataBus()
-let skilldata = new SkillBus()
-let tx = canvas.width * 1 / 12
 let tempman = new Template()
-let scenemanager = new SceneManager()
-let fightman = new Fight()
+let tx = canvas.width * 1 / 12
 
-/**
- * 游戏主函数
+/*
+ * pop的说明
+ * -1.主界面
+ * 0.属性界面
+ * 1.一级技能装备界面
+ * 2-5.二级装备界面
+ * 6.心法装备界面
  */
 export default class Main {
   constructor() {
-    // init background color
     ctx.font = "14px Georgia";
     ctx.fillStyle = '#FFFFFF'
     this.playername = usedata.getdata('name')
@@ -42,16 +32,7 @@ export default class Main {
       this.bindLoop,
       canvas
     )
-    this.operatebarpos = [
-      /*{
-              x: canvas.width * 1 / 12,
-              y: canvas.height - 120
-            },
-            {
-              x: canvas.width / 2 + canvas.width * 1 / 12,
-              y: canvas.height - 120
-            },*/
-      {
+    this.operatebarpos = [{
         name: "属性",
         x: canvas.width / 4 - canvas.width / 15,
         y: canvas.height - 60
@@ -80,21 +61,18 @@ export default class Main {
       }
     ]
     this.initEvent()
-    this.playerA = new actorimp(0, usedata)
-    this.playerB = new actorimp(1, tempman.npc[1000])
-    this.result = 0
     this.stopflag = false
-    this.battledata = []
     this.pop = -1
+    this.page = 0
+    this.skillshow = []
 
     this.restart = function() {
       this.x = 0
       this.y = 0
-      this.playerA = new actorimp(0, usedata)
-      this.playerB = new actorimp(1, tempman.npc[1000])
-      this.result = 0
       this.stopflag = false
-      this.battledata = []
+      this.pop = -1
+      this.page = 0
+      this.skillshow = []
       window.requestAnimationFrame(
         this.bindLoop,
         canvas
@@ -124,139 +102,141 @@ export default class Main {
     }).bind(this))
   }
 
-  //check skill
   checkskill(x, y) {
     if (this.stopflag == false) {
-      if (this.result == 0) {
-        if (this.pop == -1) {
-          for (var i = 0; i < this.operatebarpos.length; i++) {
-            let tmpx = this.operatebarpos[i].x
-            let tmpy = this.operatebarpos[i].y
-            if (x > tmpx - 10 && x < tmpx + 30 && y > tmpy - 30 && y < tmpy + 30) {
-              this.pop = i
-              break
-            }
-          }
-        } else
-        if (this.pop == 0) {
-          this.pop = -1
-        } else
-        if (this.pop == 1) {
-          if (x > this.poppos[0].x && y > this.poppos[0].y && x < this.poppos[3].x && y < this.poppos[3].y) {
-            var dis = (canvas.height * 3 / 5 - 80) / 5
-            var dy = canvas.height / 5
-            for (var i = 0; i < 4; ++i) {
-              if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
-                this.pop = -1
-                this.battledata = []
-                this.battledata.push("Left")
-                var tmpd = fightman.work(usedata.activeskills[i].id, this.playerA, this.playerB)
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-
-                // checkalive
-                var tmpa = fightman.checkalive(this.playerA, this.playerB)
-                var result = tmpa.result
-                var tmpd = tmpa.info
-
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-                if (result != 0) {
-                  this.result = result
-                  if (result == 1) {
-                    this.battledata.push(this.playerA.name + "获胜")
-                  } else
-                  if (result == 2) {
-                    this.battledata.push(this.playerB.name + "获胜")
-                  } else
-                  if (result == 3) {
-                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
-                  }
-                  this.battledata.push("点击任意地方重新开始")
-                  break;
-                }
-                // ai
-                this.battledata.push("Right")
-                var skill = this.playerB.ai.work(this.playerB, this.playerA)
-                var tmpd = fightman.work(skill.id, this.playerB, this.playerA)
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-
-                // checkalive
-                var tmpa = fightman.checkalive(this.playerA, this.playerB)
-                var result = tmpa.result
-                var tmpd = tmpa.info
-
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-                if (result != 0) {
-                  this.result = result
-                  if (result == 1) {
-                    this.battledata.push(this.playerA.name + "获胜")
-                  } else
-                  if (result == 2) {
-                    this.battledata.push(this.playerB.name + "获胜")
-                  } else
-                  if (result == 3) {
-                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
-                  }
-                  this.battledata.push("点击任意地方重新开始")
-                  break;
-                }
-
-                this.battledata.push("Middle")
-                var tmpd = fightman.endround(this.playerA, this.playerB)
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-                break
-              } else {
-                dy = dy + 3 * canvas.height / 20
-              }
-            }
-          } else {
-            this.pop = -1
+      if (this.pop == -1) {
+        for (var i = 0; i < this.operatebarpos.length; i++) {
+          let tmpx = this.operatebarpos[i].x
+          let tmpy = this.operatebarpos[i].y
+          if (x > tmpx - 10 && x < tmpx + 30 && y > tmpy - 30 && y < tmpy + 30) {
+            this.pop = i
+            break
           }
         }
-      } else {
-        scenemanager.stopmain()
-        if (scenemanager.hascreaterole()) {
-          scenemanager.restartcreaterole()
-        } else {
-          var res = {
-            nickName: this.playerA.name
+      } else
+      if (this.pop == 0) {
+        this.pop = -1
+      } else
+      if (this.pop == 1) {
+        if (x > this.poppos[0].x && y > this.poppos[0].y && x < this.poppos[3].x && y < this.poppos[3].y) {
+          var dis = (canvas.height * 3 / 5 - 80) / 6
+          var dy = canvas.height / 6
+          for (var i = 0; i < 5; ++i) {
+            if (y > dy + 5 && y < dy + 3 * canvas.height / 25 - 5) {
+              if (i < 4) {
+                this.pop = 2 + i
+                this.page = 0
+              } else {
+                this.pop = 6
+                this.page = 0
+              }
+              break;
+            } else {
+              dy = dy + 3 * canvas.height / 25
+            }
           }
-          var p = new CreateRole(res)
-          scenemanager.addcreaterole(p)
+        } else {
+          this.pop = -1
+        }
+      } else
+      if (this.pop >= 2 && this.pop <= 5) {
+        if (x > this.poppos[0].x && y > this.poppos[0].y && x < this.poppos[3].x && y < this.poppos[3].y) {
+          var dis = (canvas.height * 3 / 5 - 80) / 5
+          var dy = canvas.height / 5
+          for (var i = 0; i < 4; ++i) {
+            if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
+              break;
+            } else {
+              dy = dy + 3 * canvas.height / 25
+            }
+          }
+        } else 
+        if (y > this.poppos[0].y && y < this.poppos[3].y) {
+          if (x < this.poppos[0].x) {
+            this.page--
+          } else
+          if (x > this.poppos[3].x) {
+            this.page++
+          }
+        } else {
+          this.pop = 1
         }
       }
+
     }
   }
 
   dopopwork() {
     if (this.pop == 0) {
-      var y = canvas.height / 5 + canvas.height / 10
-      canvasTextCenter('你……', canvas, tx, y, tx)
-      y += canvas.height / 10
-      canvasTextCenter('刚才你问我啊', canvas, tx, y, tx)
-      y += canvas.height / 10
-      canvasTextCenter('我可以回答你一句无可奉告', canvas, tx, y, tx)
-      y += canvas.height / 10
-      canvasTextCenter('那你们又不高兴', canvas, tx, y, tx)
-      y += canvas.height / 10
-      canvasTextCenter('那怎么办？', canvas, tx, y, tx)
-    }
+      var x = canvas.width / 8 + canvas.width / 20
+      var dx = canvas.width / 20
+      var y = canvas.height / 5 + 20
+      var dy = 20
+      y = canvasTextAutoLine("属性：", canvas, x, y, 20)
+      y = canvasTextAutoLine("体质：" + usedata.getdata('tizhi'), canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("身法：" + usedata.getdata('shenfa'), canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("臂力：" + usedata.getdata('bili'), canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("定力：" + usedata.getdata('dingli'), canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("根骨：" + usedata.getdata('gengu'), canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("技能：", canvas, x, y, dy)
+      for (var i = 0; i < usedata.activeskills.length; i++) {
+        y = canvasTextAutoLine(usedata.activeskills[i].name, canvas, x + dx, y, dy)
+      }
+      y = canvasTextAutoLine("心法：", canvas, x, y, dy)
+      if (usedata.method == null) {
+        canvasTextAutoLine("无", canvas, x + dx, y, dy)
+      } else {
+        canvasTextAutoLine("无！", canvas, x + dx, y, dy)
+      }
+    } else
     if (this.pop == 1) {
       var x = canvas.width / 8
-      var dis = (canvas.height * 3 / 5 - 80) / 5
       var y = canvas.height / 5
-      for (var i = 0; i < usedata.activeskills.length; i++) {
-        var skill = usedata.activeskills[i]
-        var str = skill.name + "(消耗:" + skill.cost + ")"
+      for (var i = 0; i < 4; i++) {
+        var str = "[第" + (i + 1) + "个技能槽]"
+        if (i < usedata.activeskills.length) {
+          str = usedata.activeskills[i].name
+        }
+        canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 50, tx)
+        y = y + 3 * canvas.height / 25
+        ctx.strokeStyle = "white";
+        ctx.moveTo(x, y)
+        ctx.lineTo(x * 7, y)
+        ctx.stroke()
+      }
+      if (usedata.method == null) {
+        canvasTextCenter("[心法槽]", canvas, tx, y + 3 * canvas.height / 50, tx)
+      } else {
+        canvasTextCenter("心法槽", canvas, tx, y + 3 * canvas.height / 50, tx)
+      }
+    } else
+    if (this.pop >= 2 && this.pop <= 5) {
+      // init
+      this.skillshow = []
+      if (this.page > Math.ceil(usedata.skillbag.length / 4) - 1) {
+        this.page = Math.ceil(usedata.skillbag.length / 4) - 1
+      }
+      if (this.page < 0) {
+        this.page = 0
+      }
+      var tmp = this.page * 4
+      for (var i = 0; i < usedata.skillbag.length; i++) {
+        if (tmp == 0) {
+          this.skillshow.push(usedata.skillbag[i])
+        } else {
+          tmp--
+        }
+        if (this.skillshow.length >= 4) {
+          break;
+        }
+      }
+
+      var x = canvas.width / 8
+      var dis = (canvas.height * 3 / 5 - 80) / 6
+      var y = canvas.height / 5
+      for (var i = 0; i < this.skillshow.length; i++) {
+        var skill = this.skillshow[i]
+        var str = skill.name
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 40, tx)
         y = y + 3 * canvas.height / 20
         ctx.strokeStyle = "white";
@@ -264,6 +244,8 @@ export default class Main {
         ctx.lineTo(x * 7, y)
         ctx.stroke()
       }
+      canvasTextAutoLine("上", canvas, canvas.width / 20, canvas.height / 2, 20)
+      canvasTextAutoLine("下", canvas, canvas.width * 18 / 20, canvas.height / 2, 20)
     }
   }
 
@@ -274,56 +256,19 @@ export default class Main {
   render() {
     var y = 70
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    // title name
-    canvasTextAutoLine(this.playerA.name, canvas, tx, y, 20)
-    canvasTextCenter('对阵', canvas, tx, y, tx)
-    canvasTextRight(this.playerB.name, canvas, tx, y, tx)
-    y += 20
-    // hp
-    canvasTextAutoLine('血量:' + this.playerA.hpnow + '/' + this.playerA.gethpmax(), canvas, tx, y, 20)
-    canvasTextRight('血量:' + this.playerB.hpnow + '/' + this.playerB.gethpmax(), canvas, tx, y, 20)
-    y += 20
-    // source
-    canvasTextAutoLine(this.playerA.getsourcename() + this.playerA.sourcenow + '/' + this.playerA.getsourcemax(), canvas, tx, y, 20)
-    canvasTextRight(this.playerB.getsourcename() + this.playerB.sourcenow + '/' + this.playerB.getsourcemax(), canvas, tx, y, 20)
-    y += 20
+    // title name 
+    y = canvasTextAutoLine(usedata.getdata('name'), canvas, tx, y, 20)
+    y = canvasTextAutoLine("职业：" + tempman.job[usedata.getdata('job')].name, canvas, tx, y, 20)
     // split
     canvasTextSplit(canvas, tx, y)
-    y += 20
-    // main word
-    canvasTextAutoLine('战斗记录:', canvas, tx, y, tx)
-    y += 20
 
-    for (var i = 0; i < this.battledata.length; i++) {
-      if (this.battledata[i] == "Left") {
-        y = canvasTextAutoLine("先手", canvas, tx, y, 20)
-      } else
-      if (this.battledata[i] == "Right") {
-        canvasTextSplit(canvas, tx, y)
-        y += 20
-        canvasTextRight("后手", canvas, tx, y, 20)
-        y += 20
-      } else
-      if (this.battledata[i] == "Middle") {
-        canvasTextSplit(canvas, tx, y)
-        y += 20
-        canvasTextCenter("尾声", canvas, tx, y, 20)
-        y += 20
-      } else {
-        y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
-      }
-      //y = canvasTextAutoLine(this.battledata[i], canvas, tx, y, 20)
-    }
-    /*
-    for (var i = 0; i < usedata.activeskills.length; i++) {
-      ctx.fillText(usedata.activeskills[i].name, this.skillspos[i].x, this.skillspos[i].y)
-    }
-    */
+    // bottom
     for (var i = 0; i < this.operatebarpos.length; i++) {
       ctx.fillText(this.operatebarpos[i].name, this.operatebarpos[i].x, this.operatebarpos[i].y)
     }
     if (this.pop != -1) {
       ctx.clearRect(this.poppos[0].x, this.poppos[0].y, this.poppos[3].x - this.poppos[0].x, this.poppos[3].y - this.poppos[0].y)
+      ctx.beginPath()
       ctx.strokeStyle = "white";
       ctx.moveTo(this.poppos[0].x, this.poppos[0].y)
       ctx.lineTo(this.poppos[1].x, this.poppos[1].y)

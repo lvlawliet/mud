@@ -9,9 +9,9 @@ export default class Template {
     this.job = {
       0: {
         id: 0,
-        name: '刀',
-        sourcename: '狂刀值',
-        sourcemax: 100,
+        name: '散人',
+        sourcename: '无',
+        sourcemax: 0,
         sourceinit: 0,
       },
       1: {
@@ -23,16 +23,9 @@ export default class Template {
       },
       2: {
         id: 2,
-        name: '杀手',
-        sourcename: '影',
-        sourcemax: 200,
-        sourceinit: 200,
-      },
-      3: {
-        id: 3,
-        name: '御',
-        sourcename: '战意',
-        sourcemax: 5,
+        name: '刀',
+        sourcename: '狂刀值',
+        sourcemax: 100,
         sourceinit: 0,
       },
       100: {
@@ -62,7 +55,7 @@ export default class Template {
       1: {
         id: 1,
         name: '风铃一刀声',
-        job: 2,
+        job: 0,
         tizhi: 10,
         shenfa: 40,
         bili: 18,
