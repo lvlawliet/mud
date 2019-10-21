@@ -6,6 +6,27 @@ export default class Template {
       return instance
     instance = this
 
+    this.methods = {
+      0: {
+        id: 0,
+        name: '卸下心法',
+        passiveskill: 0,
+        job: 0,
+      },
+      1: {
+        id: 1,
+        name: '烟柳画桥',
+        passiveskill: 105,
+        job: 1,
+      },
+      2: {
+        id: 2,
+        name: '狂龙刀法',
+        passiveskill: 5,
+        job: 2,
+      },
+    }
+
     this.job = {
       0: {
         id: 0,

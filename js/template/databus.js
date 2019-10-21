@@ -1,7 +1,9 @@
 import SkillBus from './skillbus'
+import Template from './template'
 
 let instance
 let skilldata = new SkillBus()
+let tempman = new Template()
 
 /**
  * player info
@@ -21,7 +23,7 @@ export default class DataBus {
       'dingli': 0,
       'gengu': 0,
       }
-    this.activeskills = []
+    this.activeskills = [null, null, null, null]
     this.passiveskills = []
     this.method = null
     this.skillbag = []
@@ -120,14 +122,48 @@ export default class DataBus {
     } 
   }
   
-  saveskill(e) {
+  saveskillbag(e) {
     for (var i = 0; i < e.length; i++) {
       this.skillbag.push(skilldata.skills[e[i]])
+    }
+  }
+
+  savemethodbag(e) {
+    for (var i = 0; i < e.length; i++) {
+      this.methodbag.push(tempman.methods[e[i]])
     }
   }
 
   savejob(e) {
     this.job = e
   }
+  saveskill(idx, e) {
+    // check
+    if (this.job != 0 && e.job != this.job) {
+      return false
+    }
 
+    for (var i = 0; i < this.activeskills.length; i++) {
+      if (this.activeskills[i] != null) {
+        if (this.activeskills[i].id == e.id) {
+          this.activeskills[i] = null
+        }
+      }
+    }
+    this.activeskills[idx] = e
+    return true
+  }
+  
+  savemethod(e) {
+    this.activeskills = [null, null, null, null]
+    this.passiveskills = []
+    if (e.id == 0) {
+      this.method = null
+      this.job = 0
+    } else {
+      this.passiveskills.push(e.passiveskill)
+      this.method = e
+      this.job = e.job
+    }
+  }
 }

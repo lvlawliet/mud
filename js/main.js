@@ -65,6 +65,7 @@ export default class Main {
     this.pop = -1
     this.page = 0
     this.skillshow = []
+    this.methodshow = []
 
     this.restart = function() {
       this.x = 0
@@ -73,6 +74,7 @@ export default class Main {
       this.pop = -1
       this.page = 0
       this.skillshow = []
+      this.methodshow = []
       window.requestAnimationFrame(
         this.bindLoop,
         canvas
@@ -145,12 +147,52 @@ export default class Main {
           var dy = canvas.height / 5
           for (var i = 0; i < 4; ++i) {
             if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
+              if (i < this.skillshow.length) {
+                var flag = usedata.saveskill(this.pop - 2, this.skillshow[i])
+                if (flag == true) {
+                  this.pop = 1
+                  this.page = 0
+                } else {
+                  wx.showModal({
+                    title: "技能和运转的心法不符",
+                    showCancel: false
+                  })
+                }
+              }
               break;
             } else {
-              dy = dy + 3 * canvas.height / 25
+              dy = dy + 3 * canvas.height / 20
             }
           }
-        } else 
+        } else
+        if (y > this.poppos[0].y && y < this.poppos[3].y) {
+          if (x < this.poppos[0].x) {
+            this.page--
+          } else
+          if (x > this.poppos[3].x) {
+            this.page++
+          }
+        } else {
+          this.pop = 1
+        }
+      } else
+      if (this.pop == 6) {
+        if (x > this.poppos[0].x && y > this.poppos[0].y && x < this.poppos[3].x && y < this.poppos[3].y) {
+          var dis = (canvas.height * 3 / 5 - 80) / 5
+          var dy = canvas.height / 5
+          for (var i = 0; i < 4; ++i) {
+            if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
+              if (i < this.methodshow.length) {
+                usedata.savemethod(this.methodshow[i])
+                this.pop = 1
+                this.page = 0
+              }
+              break;
+            } else {
+              dy = dy + 3 * canvas.height / 20
+            }
+          }
+        } else
         if (y > this.poppos[0].y && y < this.poppos[3].y) {
           if (x < this.poppos[0].x) {
             this.page--
@@ -180,13 +222,15 @@ export default class Main {
       y = canvasTextAutoLine("根骨：" + usedata.getdata('gengu'), canvas, x + dx, y, dy)
       y = canvasTextAutoLine("技能：", canvas, x, y, dy)
       for (var i = 0; i < usedata.activeskills.length; i++) {
-        y = canvasTextAutoLine(usedata.activeskills[i].name, canvas, x + dx, y, dy)
+        if (usedata.activeskills[i] != null) {
+          y = canvasTextAutoLine(usedata.activeskills[i].name, canvas, x + dx, y, dy)
+        }
       }
       y = canvasTextAutoLine("心法：", canvas, x, y, dy)
       if (usedata.method == null) {
         canvasTextAutoLine("无", canvas, x + dx, y, dy)
       } else {
-        canvasTextAutoLine("无！", canvas, x + dx, y, dy)
+        canvasTextAutoLine(usedata.method.name, canvas, x + dx, y, dy)
       }
     } else
     if (this.pop == 1) {
@@ -194,7 +238,7 @@ export default class Main {
       var y = canvas.height / 5
       for (var i = 0; i < 4; i++) {
         var str = "[第" + (i + 1) + "个技能槽]"
-        if (i < usedata.activeskills.length) {
+        if (usedata.activeskills[i] != null) {
           str = usedata.activeskills[i].name
         }
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 50, tx)
@@ -207,7 +251,7 @@ export default class Main {
       if (usedata.method == null) {
         canvasTextCenter("[心法槽]", canvas, tx, y + 3 * canvas.height / 50, tx)
       } else {
-        canvasTextCenter("心法槽", canvas, tx, y + 3 * canvas.height / 50, tx)
+        canvasTextCenter(usedata.method.name, canvas, tx, y + 3 * canvas.height / 50, tx)
       }
     } else
     if (this.pop >= 2 && this.pop <= 5) {
@@ -244,8 +288,46 @@ export default class Main {
         ctx.lineTo(x * 7, y)
         ctx.stroke()
       }
-      canvasTextAutoLine("上", canvas, canvas.width / 20, canvas.height / 2, 20)
-      canvasTextAutoLine("下", canvas, canvas.width * 18 / 20, canvas.height / 2, 20)
+      canvasTextAutoLine("<<", canvas, canvas.width / 20, canvas.height / 2, 20)
+      canvasTextAutoLine(">>", canvas, canvas.width * 18 / 20, canvas.height / 2, 20)
+    } else
+    if (this.pop == 6) {
+      // init
+      this.methodshow = []
+      if (this.page > Math.ceil(usedata.methodbag.length / 4) - 1) {
+        this.page = Math.ceil(usedata.methodbag.length / 4) - 1
+      }
+      if (this.page < 0) {
+        this.page = 0
+      }
+      var tmp = this.page * 4
+      for (var i = 0; i < usedata.methodbag.length; i++) {
+        if (tmp == 0) {
+          this.methodshow.push(usedata.methodbag[i])
+        } else {
+          tmp--
+        }
+        if (this.methodshow.length >= 4) {
+          break;
+        }
+      }
+
+      var x = canvas.width / 8
+      var dis = (canvas.height * 3 / 5 - 80) / 6
+      var y = canvas.height / 5
+      for (var i = 0; i < this.methodshow.length; i++) {
+        var skill = this.methodshow[i]
+        var str = skill.name
+        canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 40, tx)
+        y = y + 3 * canvas.height / 20
+        ctx.strokeStyle = "white";
+        ctx.moveTo(x, y)
+        ctx.lineTo(x * 7, y)
+        ctx.stroke()
+      }
+      canvasTextAutoLine("<<", canvas, canvas.width / 20, canvas.height / 2, 20)
+      canvasTextAutoLine(">>", canvas, canvas.width * 18 / 20, canvas.height / 2, 20)
+
     }
   }
 
