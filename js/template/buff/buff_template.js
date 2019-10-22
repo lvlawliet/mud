@@ -23,5 +23,10 @@ export default class buff_template {
     var dinfo = []
     return dinfo
   }
-  
+
+  // do buff effect on add
+  attach(imp, number) {}
+
+  // do buff effect on remove
+  detach(imp, number) {}
 }

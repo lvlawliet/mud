@@ -8,6 +8,6 @@ export default class ai_template {
 
   // do buff effect after damage
   work(cast, target) {
-    return skilldata.skills[0]
+    return skilldata.skills[9999]
   }
 }

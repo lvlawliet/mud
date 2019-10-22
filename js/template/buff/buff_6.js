@@ -18,4 +18,26 @@ export default class buff_6 extends buff_template {
     }
     return dinfo
   }
+
+  // do buff effect on add
+  attach(imp, number) {
+    imp.extra['bili'] += number
+    if (number > 8) {
+      imp.extra['hit'] += 5
+    }
+    if (number > 15) {
+      imp.extra['crit'] += 10
+    }
+  }
+
+  // do buff effect on remove
+  detach(imp, number) {
+    imp.extra['bili'] -= number
+    if (number > 8) {
+      imp.extra['hit'] -= 5
+    }
+    if (number > 15) {
+      imp.extra['crit'] -= 10
+    }
+  }
 }

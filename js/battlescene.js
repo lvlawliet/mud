@@ -30,7 +30,7 @@ let fightman = new Fight()
  * 游戏主函数
  */
 export default class BattleScene {
-  constructor() {
+  constructor(e) {
     // init background color
     ctx.font = "14px Georgia";
     ctx.fillStyle = '#FFFFFF'
@@ -73,17 +73,17 @@ export default class BattleScene {
     ]
     this.initEvent()
     this.playerA = new actorimp(0, usedata)
-    this.playerB = new actorimp(1, tempman.npc[1000])
+    this.playerB = new actorimp(1, tempman.npc[e])
     this.result = 0
     this.stopflag = false
     this.battledata = []
     this.pop = -1
 
-    this.restart = function() {
+    this.restart = function(e) {
       this.x = 0
       this.y = 0
       this.playerA = new actorimp(0, usedata)
-      this.playerB = new actorimp(1, tempman.npc[1000])
+      this.playerB = new actorimp(1, tempman.npc[e])
       this.result = 0
       this.stopflag = false
       this.battledata = []
@@ -137,12 +137,12 @@ export default class BattleScene {
           if (x > this.poppos[0].x && y > this.poppos[0].y && x < this.poppos[3].x && y < this.poppos[3].y) {
             var dis = (canvas.height * 3 / 5 - 80) / 5
             var dy = canvas.height / 5
-            for (var i = 0; i < 4; ++i) {
+            for (var i = 0; i < this.playerA.activeskills.length; ++i) {
               if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
                 this.pop = -1
                 this.battledata = []
                 this.battledata.push("Left")
-                var tmpd = fightman.work(usedata.activeskills[i].id, this.playerA, this.playerB)
+                var tmpd = fightman.work(this.playerA.activeskills[i].id, this.playerA, this.playerB)
                 for (var k = 0; k < tmpd.length; k++) {
                   this.battledata.push(tmpd[k])
                 }
@@ -215,15 +215,12 @@ export default class BattleScene {
           }
         }
       } else {
-        scenemanager.stopmain()
-        if (scenemanager.hascreaterole()) {
-          scenemanager.restartcreaterole()
+        scenemanager.stopballtescene()
+        if (scenemanager.hasmain()) {
+          scenemanager.restartmain()
         } else {
-          var res = {
-            nickName: this.playerA.name
-          }
-          var p = new CreateRole(res)
-          scenemanager.addcreaterole(p)
+          var p = new Main()
+          scenemanager.addmain(p)
         }
       }
     }
@@ -231,6 +228,7 @@ export default class BattleScene {
 
   dopopwork() {
     if (this.pop == 0) {
+      /*
       var y = canvas.height / 5 + canvas.height / 10
       canvasTextCenter('你……', canvas, tx, y, tx)
       y += canvas.height / 10
@@ -241,13 +239,26 @@ export default class BattleScene {
       canvasTextCenter('那你们又不高兴', canvas, tx, y, tx)
       y += canvas.height / 10
       canvasTextCenter('那怎么办？', canvas, tx, y, tx)
+      */
+      var x = canvas.width / 8 + canvas.width / 20
+      var dx = canvas.width / 20
+      var y = canvas.height / 5 + 20
+      var dy = 20
+      y = canvasTextAutoLine("属性：", canvas, x, y, 20)
+      y = canvasTextAutoLine("体质：" + this.playerA.gettizhi() + '(' + this.playerA.extra['tizhi'] + ')', canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("身法：" + this.playerA.getshenfa() + '(' + this.playerA.extra['shenfa'] + ')', canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("臂力：" + this.playerA.getbili() + '(' + this.playerA.extra['bili'] + ')', canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("定力：" + this.playerA.getdingli() + '(' + this.playerA.extra['dingli'] + ')', canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("根骨：" + this.playerA.getgengu() + '(' + this.playerA.extra['gengu'] + ')', canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("额外暴击率：" + this.playerA.extra['crit'], canvas, x + dx, y, dy)
+      y = canvasTextAutoLine("额外命中率：" + this.playerA.extra['hit'], canvas, x + dx, y, dy)
     }
     if (this.pop == 1) {
       var x = canvas.width / 8
       var dis = (canvas.height * 3 / 5 - 80) / 6
       var y = canvas.height / 5
-      for (var i = 0; i < usedata.activeskills.length; i++) {
-        var skill = usedata.activeskills[i]
+      for (var i = 0; i < this.playerA.activeskills.length; i++) {
+        var skill = this.playerA.activeskills[i]
         var str = skill.name + "(消耗:" + skill.cost + ")"
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 40, tx)
         y = y + 3 * canvas.height / 20
@@ -274,6 +285,10 @@ export default class BattleScene {
     // hp
     canvasTextAutoLine('血量:' + this.playerA.hpnow + '/' + this.playerA.gethpmax(), canvas, tx, y, 20)
     canvasTextRight('血量:' + this.playerB.hpnow + '/' + this.playerB.gethpmax(), canvas, tx, y, 20)
+    y += 20
+    // magic
+    canvasTextAutoLine('内力:' + this.playerA.magicnow + '/' + this.playerA.magicmax, canvas, tx, y, 20)
+    canvasTextRight('内力:' + this.playerB.magicnow + '/' + this.playerB.magicmax, canvas, tx, y, 20)
     y += 20
     // source
     canvasTextAutoLine(this.playerA.getsourcename() + this.playerA.sourcenow + '/' + this.playerA.getsourcemax(), canvas, tx, y, 20)

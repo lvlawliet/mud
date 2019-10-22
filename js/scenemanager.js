@@ -58,8 +58,8 @@ export default class SceneManager {
     return this.scene.hasOwnProperty('balltescene')
   }
 
-  restartballtescene() {
-    this.scene['balltescene'].restart()
+  restartballtescene(e) {
+    this.scene['balltescene'].restart(e)
   }
 
   stopballtescene() {

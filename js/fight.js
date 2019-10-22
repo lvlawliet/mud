@@ -16,10 +16,14 @@ export default class Fight {
   }
 
   checkcost(player, skill) {
-    if (player.sourcenow < skill.cost) {
+    if (player.magicnow < skill.cost) {
       return false
     }
-    player.sourcenow -= skill.cost
+    if (player.sourcenow < skill.sourcecost) {
+      return false
+    }
+    player.sourcenow -= skill.sourcecost
+    player.magicnow -= skill.cost
     return true
   }
 
@@ -93,6 +97,9 @@ export default class Fight {
     // do passive
     for (var key in target.passiveskills) {
       var effect = this.dopassiveskills(target.passiveskills[key], target, cast)
+      for (var i = 0; i < effect.length; i++) {
+        dinfo.push(effect[i])
+      }
     }
     // do buff
     for (var key in target.buffs) {

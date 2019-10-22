@@ -7,4 +7,14 @@ export default class buff_3 extends buff_template {
   constructor() {
     super()
   }
+
+  // do buff effect on add
+  attach(imp, number) {
+    imp.extra['bili'] += 15
+  }
+
+  // do buff effect on remove
+  detach(imp, number) {
+    imp.extra['bili'] -= 15
+  }
 }

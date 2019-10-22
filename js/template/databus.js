@@ -161,7 +161,7 @@ export default class DataBus {
       this.method = null
       this.job = 0
     } else {
-      this.passiveskills.push(e.passiveskill)
+      this.passiveskills.push(skilldata.skills[e.passiveskill])
       this.method = e
       this.job = e.job
     }

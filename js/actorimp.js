@@ -1,10 +1,12 @@
 import Template from './template/template'
 import SkillBus from './template/skillbus'
 import AiRegister from './template/airegister'
+import BuffRegister from './template/buffregister'
 
 let tempman = new Template()
 let skilldata = new SkillBus()
 let airegister = new AiRegister()
+let br = new BuffRegister()
 
 export default class actorimp {
   constructor(type, e) {
@@ -17,7 +19,15 @@ export default class actorimp {
       this.dingli = e.property['dingli']
       this.gengu = e.property['gengu']
       this.hpbase = 2000
-      this.activeskills = e.activeskills
+      this.activeskills = []
+      for (var i = 0; i < e.activeskills.length; i++) {
+        if (e.activeskills[i] != null) {
+          this.activeskills.push(e.activeskills[i])
+        }
+      }
+      if (this.activeskills.length == 0) {
+        this.activeskills.push(skilldata.skills[0])
+      }
       this.passiveskills = e.passiveskills
     } else if (type == 1) { // npc
       this.name = e.name
@@ -37,56 +47,41 @@ export default class actorimp {
         this.passiveskills.push(skilldata.skills[e.passiveskills[i]])
       }
       this.ai = airegister.ar[e.ai]
+    } 
+    this.extra = {
+      'tizhi': 0,
+      'shenfa': 0,
+      'bili': 0,
+      'dingli': 0,
+      'gengu': 0,
+      'hit': 0,
+      'crit': 0,
     }
     this.hpnow = this.gethpmax()
     this.sourcenow = this.getsourceinit();
     this.buffs = {}
+    this.magicnow = 200
+    this.magicmax = 200
   }
 
   getextratizhi() {
-    var tmp = 0
-    for (var key in this.buffs) {
-    }
-    return tmp
+    return this.extra['tizhi']
   }
 
   getextrashenfa() {
-    var tmp = 0
-    for (var key in this.buffs) {
-      if (key == 2) {
-        tmp += 15
-      }
-    }
-    return tmp
+    return this.extra['shenfa']
   }
 
   getextrabili() {
-    var tmp = 0
-    for (var key in this.buffs) {
-      if (key == 3) {
-        tmp += 15
-      } else
-      if (key == 6) {
-        tmp += this.buffs[key].number
-      }
-    }
-    return tmp
+    return this.extra['bili']
   }
+
   getextradingli() {
-    var tmp = 0
-    for (var key in this.buffs) {
-      if (key == 4) {
-        tmp += 15
-      }
-    }
-    return tmp
+    return this.extra['dingli']
   }
 
   getextragengu() {
-    var tmp = 0
-    for (var key in this.buffs) {
-    }
-    return tmp
+    return this.extra['gengu']
   }
 
   gettizhi() {
@@ -118,29 +113,11 @@ export default class actorimp {
   }
 
   getextrahit() {
-    var tmp = 0
-    for (var key in this.buffs) {
-      if (key == 5) {
-        tmp += 5
-      }
-      if (key == 6 && this.getbuffnumber(key) >= 8) {
-        tmp += 5
-      }
-    }
-    return tmp
+    return this.extra['hit']
   }
 
   getextracrit() {
-    var tmp = 0
-    for (var key in this.buffs) {
-      if (key == 1) {
-        tmp += 10
-      } else
-      if (key == 6 && this.getbuffnumber(key) >= 15) {
-        tmp += 10
-      }
-    }
-    return tmp
+    return this.extra['crit']
   }
 
   getcrit() {
@@ -193,28 +170,56 @@ export default class actorimp {
 
   addbuff(buffid, number) {
     var buff = skilldata.buffs[buffid]
+    var tmpnumber = number
+    if (this.buffs.hasOwnProperty(buff.id) == true) {
+      tmpnumber = this.buffs[buff.id].number + number
+      if (tmpnumber > buff.max) {
+        tmpnumber = buff.max
+      }
+      br.br[buff.id].detach(this, this.buffs[buff.id].number)
+      delete this.buffs[buff.id]
+    }
+    this.buffs[buff.id] = {
+      buff: buff,
+      number: tmpnumber,
+      round: buff.round
+    }
+    br.br[buff.id].attach(this, tmpnumber)
+    /*
     if (this.buffs.hasOwnProperty(buff.id) == false) {
       this.buffs[buff.id] = {
         buff: buff,
         number: number,
         round: buff.round
       }
+      br.br[buff.id].attach(this, number)
     } else {
-      this.buffs[buff.id].number += number
-      if (this.buffs[buff.id].number > buff.max) {
+      var tmpnumber = this.buffs[buff.id].number + number
+      if (tmpnumber > buff.max) {
         this.buffs[buff.id].number = buff.max
         this.buffs[buff.id].round = buff.round
       }
     }
+    */
   }
 
   removebuff(id, number) {
+    if (this.buffs.hasOwnProperty(id)) {
+      var tmpnumber = this.buffs[id].number - number
+      br.br[id].detach(this, this.buffs[id].number)
+      delete this.buffs[id]
+      if (tmpnumber > 0) {
+        this.addbuff(id, tmpnumber)
+      } 
+    }
+    /*
     if (this.buffs.hasOwnProperty(id)) {
       this.buffs[id].number -= number
       if (this.buffs[id].number <= 0) {
         delete this.buffs[id]
       }
     }
+    */
   }
 
   getbuffnumber(id) {

@@ -1,5 +1,7 @@
 import Template from './template/template'
 import DataBus from './template/databus'
+import BattleScene from './battlescene'
+import SceneManager from './scenemanager'
 import {
   canvasTextAutoLine,
   canvasTextRight,
@@ -11,6 +13,8 @@ let ctx = canvas.getContext('2d')
 let usedata = new DataBus()
 let tempman = new Template()
 let tx = canvas.width * 1 / 12
+let ty = (canvas.height - 310) / 3
+let scenemanager = new SceneManager()
 
 /*
  * pop的说明
@@ -60,6 +64,33 @@ export default class Main {
         y: canvas.height * 4 / 5,
       }
     ]
+    this.selectpos = {
+      0: [
+        {
+          x: tx,
+          y: 130,
+        },
+        {
+          x: tx * 11,
+          y: 130,
+        },
+        {
+          x: tx,
+          y: 130 + ty,
+        },
+        {
+          x: tx * 11,
+          y: 130 + ty
+        }
+      ]
+    }
+    this.selectbar = [
+      {
+        name: '木武童',
+        x: tx,
+        y: 130 + ty / 2
+      },
+    ] 
     this.initEvent()
     this.stopflag = false
     this.pop = -1
@@ -107,6 +138,18 @@ export default class Main {
   checkskill(x, y) {
     if (this.stopflag == false) {
       if (this.pop == -1) {
+        for (var key in this.selectpos) {
+          var tmpselect = this.selectpos[key]
+          if (x > tmpselect[0].x && y > tmpselect[0].y && x < tmpselect[3].x && y < tmpselect[3].y) {
+            scenemanager.stopmain()
+            if (scenemanager.hasballtescene()) {
+              scenemanager.restartballtescene(0)
+            } else {
+              var p = new BattleScene(0)
+              scenemanager.addballtescene(p)
+            }
+          }
+        }
         for (var i = 0; i < this.operatebarpos.length; i++) {
           let tmpx = this.operatebarpos[i].x
           let tmpy = this.operatebarpos[i].y
@@ -257,16 +300,26 @@ export default class Main {
     if (this.pop >= 2 && this.pop <= 5) {
       // init
       this.skillshow = []
-      if (this.page > Math.ceil(usedata.skillbag.length / 4) - 1) {
-        this.page = Math.ceil(usedata.skillbag.length / 4) - 1
+      var tmpbag = []
+      if (usedata.getdata('job') == 0) {
+        tmpbag = usedata.skillbag
+      } else {
+        for (var i = 0; i < usedata.skillbag.length; i++) {
+          if (usedata.getdata('job') == usedata.skillbag[i].job) {
+            tmpbag.push(usedata.skillbag[i])
+          }
+        }
+      }
+      if (this.page > Math.ceil(tmpbag.length / 4) - 1) {
+        this.page = Math.ceil(tmpbag.length / 4) - 1
       }
       if (this.page < 0) {
         this.page = 0
       }
       var tmp = this.page * 4
-      for (var i = 0; i < usedata.skillbag.length; i++) {
+      for (var i = 0; i < tmpbag.length; i++) {
         if (tmp == 0) {
-          this.skillshow.push(usedata.skillbag[i])
+          this.skillshow.push(tmpbag[i])
         } else {
           tmp--
         }
@@ -336,6 +389,7 @@ export default class Main {
    * 每一帧重新绘制所有的需要展示的元素
    */
   render() {
+    ctx.beginPath()
     var y = 70
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     // title name 
@@ -344,14 +398,32 @@ export default class Main {
     // split
     canvasTextSplit(canvas, tx, y)
 
+    // draw select
+    for (var key in this.selectpos) {
+      var tmppos = this.selectpos[key]
+      ctx.strokeStyle = "white";
+      ctx.moveTo(tmppos[0].x, tmppos[0].y)
+      ctx.lineTo(tmppos[1].x, tmppos[1].y)
+      ctx.moveTo(tmppos[0].x, tmppos[0].y)
+      ctx.lineTo(tmppos[2].x, tmppos[2].y)
+      ctx.moveTo(tmppos[3].x, tmppos[3].y)
+      ctx.lineTo(tmppos[1].x, tmppos[1].y)
+      ctx.moveTo(tmppos[3].x, tmppos[3].y)
+      ctx.lineTo(tmppos[2].x, tmppos[2].y)
+      ctx.stroke();
+    }
+    for (var i = 0; i < this.selectbar.length; i++) {
+      canvasTextCenter(this.selectbar[i].name, canvas, 0, this.selectbar[i].y, 0)
+    }
+
     // bottom
     for (var i = 0; i < this.operatebarpos.length; i++) {
       ctx.fillText(this.operatebarpos[i].name, this.operatebarpos[i].x, this.operatebarpos[i].y)
     }
     if (this.pop != -1) {
       ctx.clearRect(this.poppos[0].x, this.poppos[0].y, this.poppos[3].x - this.poppos[0].x, this.poppos[3].y - this.poppos[0].y)
-      ctx.beginPath()
       ctx.strokeStyle = "white";
+      ctx.beginPath()
       ctx.moveTo(this.poppos[0].x, this.poppos[0].y)
       ctx.lineTo(this.poppos[1].x, this.poppos[1].y)
       ctx.moveTo(this.poppos[0].x, this.poppos[0].y)

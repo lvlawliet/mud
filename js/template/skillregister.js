@@ -1,3 +1,4 @@
+import skill_0 from './skill/skill_0'
 import skill_1 from './skill/skill_1'
 import skill_2 from './skill/skill_2'
 import skill_3 from './skill/skill_3'
@@ -15,6 +16,7 @@ import skill_1001 from './skill/skill_1001'
 import skill_1002 from './skill/skill_1002'
 import skill_1003 from './skill/skill_1003'
 import skill_1004 from './skill/skill_1004'
+import skill_9999 from './skill/skill_9999'
 
 let instance
 
@@ -24,6 +26,7 @@ export default class SkillRegister {
       return instance
     instance = this
     this.sr = {
+      0: new skill_0(),
       1: new skill_1(),
       2: new skill_2(),
       3: new skill_3(),
@@ -41,6 +44,7 @@ export default class SkillRegister {
       1002: new skill_1002(),
       1003: new skill_1003(),
       1004: new skill_1004(),
+      9999: new skill_9999(),
     }
   }
 }
