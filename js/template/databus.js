@@ -28,6 +28,7 @@ export default class DataBus {
     this.method = null
     this.skillbag = []
     this.methodbag = []
+    this.wuxing = [0]
 
     // const string
     this.pro2string = {
@@ -160,6 +161,7 @@ export default class DataBus {
     if (e.id == 0) {
       this.method = null
       this.job = 0
+      this.wuxing = [0]
     } else {
       this.passiveskills.push(skilldata.skills[e.passiveskill])
       this.method = e

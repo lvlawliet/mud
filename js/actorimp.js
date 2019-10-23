@@ -20,6 +20,7 @@ export default class actorimp {
       this.gengu = e.property['gengu']
       this.hpbase = 2000
       this.activeskills = []
+      this.wuxing = [0]
       for (var i = 0; i < e.activeskills.length; i++) {
         if (e.activeskills[i] != null) {
           this.activeskills.push(e.activeskills[i])
@@ -38,6 +39,7 @@ export default class actorimp {
       this.dingli = e.dingli
       this.gengu = e.gengu
       this.hpbase = e.hpbase
+      this.wuxing = e.wuxing
       this.activeskills = []
       this.passiveskills = []
       for (var i = 0; i < e.activeskills.length; i++) {
@@ -148,6 +150,18 @@ export default class actorimp {
       this.sourcenow = max
     } else {
       this.sourcenow += e
+    }
+    return realadd
+  }
+
+  magicadd(e) {
+    var max = this.magicmax;
+    var realadd = e
+    if (this.magicnow + e > max) {
+      realadd = max - this.magicnow
+      this.magicnow = max
+    } else {
+      this.magicnow += e
     }
     return realadd
   }

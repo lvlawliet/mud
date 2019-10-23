@@ -8,6 +8,11 @@ import buff_7 from './buff/buff_7'
 import buff_8 from './buff/buff_8'
 import buff_9 from './buff/buff_9'
 import buff_10 from './buff/buff_10'
+import buff_11 from './buff/buff_11'
+import buff_12 from './buff/buff_12'
+import buff_13 from './buff/buff_13'
+import buff_14 from './buff/buff_14'
+import buff_15 from './buff/buff_15'
 
 let instance
 
@@ -27,6 +32,11 @@ export default class BuffRegister {
       8: new buff_8(),
       9: new buff_9(),
       10: new buff_10(),
+      11: new buff_11(),
+      12: new buff_12(),
+      13: new buff_13(),
+      14: new buff_14(),
+      15: new buff_15(),
     }
   }
 }

@@ -6,24 +6,67 @@ export default class Template {
       return instance
     instance = this
 
+    this.wuxing = {
+      0: '无',
+      1: '金',
+      2: '木',
+      3: '水',
+      4: '火',
+      5: '土'
+    }
+
+    this.wuxingrestrain = [
+           /*无    金    木    水    火    土*/
+      /*无*/[1,    1,    1,    1,    1,    1],
+      /*金*/[1,    1,    2, 0.75,  0.5, 1.25],
+      /*木*/[1,  0.5,    1, 1.25, 0.75,    2],
+      /*水*/[1, 1.25, 0.75,    1,    2,  0.5],
+      /*火*/[1,    2, 1.25,  0.5,    1, 0.75],
+      /*土*/[1, 0.75,  0.5,    2, 1.25,    1],
+    ]
+
     this.methods = {
       0: {
         id: 0,
         name: '卸下心法',
         passiveskill: 0,
         job: 0,
+        wuxing: [0],
       },
       1: {
         id: 1,
         name: '烟柳画桥',
         passiveskill: 105,
         job: 1,
+        wuxing: [2],
       },
       2: {
         id: 2,
         name: '狂龙刀法',
         passiveskill: 5,
         job: 2,
+        wuxing: [1],
+      },
+      3: {
+        id: 3,
+        name: '断水刃',
+        passiveskill: 204,
+        job: 3,
+        wuxing: [1],
+      },
+      4: {
+        id: 4,
+        name: '冲云链',
+        passiveskill: 10000,
+        job: 3,
+        wuxing: [5],
+      },
+      5: {
+        id: 5,
+        name: '隐龙诀',
+        passiveskill: 10000,
+        job: 3,
+        wuxing: [4],
       },
     }
 
@@ -49,6 +92,13 @@ export default class Template {
         sourcemax: 100,
         sourceinit: 0,
       },
+      3: {
+        id: 3,
+        name: '链刃',
+        sourcename: '隐',
+        sourcemax: 5,
+        sourceinit: 0,
+      },
       100: {
         id: 100,
         name: '玄武魄',
@@ -70,8 +120,9 @@ export default class Template {
         gengu: 5,
         hpbase: 1000,
         activeskills: [],
-        passiveskills: [1000, 1001],
+        passiveskills: [1000],
         ai: "0",
+        wuxing: [2],
       },
       1: {
         id: 1,
@@ -86,6 +137,7 @@ export default class Template {
         activeskills: [],
         passiveskills: [200],
         ai: "0",
+        wuxing: [1],
       },
       1000: {
         id: 1000,
@@ -100,6 +152,7 @@ export default class Template {
         activeskills: [1002, 1003, 1004],
         passiveskills: [],
         ai: "jiayu",
+        wuxing: [5],
       }
     }
 

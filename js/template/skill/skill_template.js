@@ -11,6 +11,10 @@ export default class skill_template {
   doskilleffectbeforebedamage(skill, cast, target, tmppassvalue) {
     return tmppassvalue
   }
+
+  dopassiveskilleffectbeforebedamage(skill, cast, target, tmppassvalue) {
+    return tmppassvalue
+  }
   
   // do first use buff
   dofirstusebuff(skill, cast, target, tmppassvalue) {

@@ -266,14 +266,19 @@ export default class Main {
       y = canvasTextAutoLine("技能：", canvas, x, y, dy)
       for (var i = 0; i < usedata.activeskills.length; i++) {
         if (usedata.activeskills[i] != null) {
-          y = canvasTextAutoLine(usedata.activeskills[i].name, canvas, x + dx, y, dy)
+          y = canvasTextAutoLine(usedata.activeskills[i].name + '(' + tempman.wuxing[usedata.activeskills[i].wuxing] + ')', canvas, x + dx, y, dy)
         }
       }
       y = canvasTextAutoLine("心法：", canvas, x, y, dy)
       if (usedata.method == null) {
         canvasTextAutoLine("无", canvas, x + dx, y, dy)
       } else {
-        canvasTextAutoLine(usedata.method.name, canvas, x + dx, y, dy)
+        var tmpstr = usedata.method.name + '('
+        for (var xf = 0; xf < usedata.method.wuxing.length; xf++) {
+          tmpstr += tempman.wuxing[usedata.method.wuxing[xf]]
+        }
+        tmpstr += ')'
+        canvasTextAutoLine(tmpstr, canvas, x + dx, y, dy)
       }
     } else
     if (this.pop == 1) {
@@ -282,7 +287,7 @@ export default class Main {
       for (var i = 0; i < 4; i++) {
         var str = "[第" + (i + 1) + "个技能槽]"
         if (usedata.activeskills[i] != null) {
-          str = usedata.activeskills[i].name
+          str = usedata.activeskills[i].name + '(' + tempman.wuxing[usedata.activeskills[i].wuxing] + ')'
         }
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 50, tx)
         y = y + 3 * canvas.height / 25
@@ -294,7 +299,12 @@ export default class Main {
       if (usedata.method == null) {
         canvasTextCenter("[心法槽]", canvas, tx, y + 3 * canvas.height / 50, tx)
       } else {
-        canvasTextCenter(usedata.method.name, canvas, tx, y + 3 * canvas.height / 50, tx)
+        var tmpstr = usedata.method.name + '('
+        for (var xf = 0; xf < usedata.method.wuxing.length; xf++) {
+          tmpstr += tempman.wuxing[usedata.method.wuxing[xf]]
+        }
+        tmpstr += ')'
+        canvasTextCenter(tmpstr, canvas, tx, y + 3 * canvas.height / 50, tx)
       }
     } else
     if (this.pop >= 2 && this.pop <= 5) {
@@ -333,7 +343,7 @@ export default class Main {
       var y = canvas.height / 5
       for (var i = 0; i < this.skillshow.length; i++) {
         var skill = this.skillshow[i]
-        var str = skill.name
+        var str = skill.name + '(' + tempman.wuxing[skill.wuxing] + ')'
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 40, tx)
         y = y + 3 * canvas.height / 20
         ctx.strokeStyle = "white";
@@ -369,8 +379,12 @@ export default class Main {
       var dis = (canvas.height * 3 / 5 - 80) / 6
       var y = canvas.height / 5
       for (var i = 0; i < this.methodshow.length; i++) {
-        var skill = this.methodshow[i]
-        var str = skill.name
+        var method = this.methodshow[i]
+        var str = method.name + '('
+        for (var xf = 0; xf < method.wuxing.length; xf++) {
+          str += tempman.wuxing[method.wuxing[xf]]
+        }
+        str += ')'
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 40, tx)
         y = y + 3 * canvas.height / 20
         ctx.strokeStyle = "white";

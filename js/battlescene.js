@@ -42,8 +42,7 @@ export default class BattleScene {
       this.bindLoop,
       canvas
     )
-    this.operatebarpos = [
-      {
+    this.operatebarpos = [{
         name: "属性",
         x: canvas.width / 4 - canvas.width / 15,
         y: canvas.height - 60
@@ -205,6 +204,28 @@ export default class BattleScene {
                 for (var k = 0; k < tmpd.length; k++) {
                   this.battledata.push(tmpd[k])
                 }
+                // checkalive
+                var tmpa = fightman.checkalive(this.playerA, this.playerB)
+                var result = tmpa.result
+                var tmpd = tmpa.info
+
+                for (var k = 0; k < tmpd.length; k++) {
+                  this.battledata.push(tmpd[k])
+                }
+                if (result != 0) {
+                  this.result = result
+                  if (result == 1) {
+                    this.battledata.push(this.playerA.name + "获胜")
+                  } else
+                  if (result == 2) {
+                    this.battledata.push(this.playerB.name + "获胜")
+                  } else
+                  if (result == 3) {
+                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                  }
+                  this.battledata.push("点击任意地方重新开始")
+                  break;
+                }
                 break
               } else {
                 dy = dy + 3 * canvas.height / 20
@@ -259,7 +280,7 @@ export default class BattleScene {
       var y = canvas.height / 5
       for (var i = 0; i < this.playerA.activeskills.length; i++) {
         var skill = this.playerA.activeskills[i]
-        var str = skill.name + "(消耗:" + skill.cost + ")"
+        var str = skill.name + '(' + tempman.wuxing[skill.wuxing] + ')' + "(" + skill.cost + ")" + '(' + skill.sourcecost + ')'
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 40, tx)
         y = y + 3 * canvas.height / 20
         ctx.strokeStyle = "white";

@@ -1,10 +1,12 @@
 import SkillBus from './template/skillbus'
 import SkillRegister from './template/skillregister'
 import BuffRegister from './template/buffregister'
+import Template from './template/template'
 
 let skilldata = new SkillBus()
 let rs = new SkillRegister()
 let br = new BuffRegister()
+let tempman = new Template()
 
 let instance
 
@@ -47,6 +49,12 @@ export default class Fight {
     var more = (Math.random() * (skill.damageratiomax - skill.damageratiomin) + skill.damageratiomin) * cast.getphyattack()
     var damage = Math.floor(skill.damagebase + more)
     damage -= target.getphydefence()
+    // wuxing
+    var percent = 1
+    for (var i = 0; i < target.wuxing.length; i++) {
+      percent = percent * tempman.wuxingrestrain[skill.wuxing][target.wuxing[i]]
+    }
+    damage = damage * percent
     // crit
     var critpercent = cast.getcrit()
     var rand = Math.floor(Math.random() * 100)
@@ -82,10 +90,14 @@ export default class Fight {
     // do buff
     for (var key in cast.buffs) {
       var buff = skilldata.buffs[key]
+      var effect = br.br[key].doeffectonroundend(cast, target)
+      for (var i = 0; i < effect.length; i++) {
+        dinfo.push(effect[i])
+      }
       if (cast.buffs[key].round != -99) {
         cast.buffs[key].round--
         if (cast.buffs[key].round <= 0) {
-          delete cast.buffs[key]
+          cast.removebuff(key, 99)
           dinfo.push("[" + buff.name + "]" + "从" + cast.name + "身上消失")
           var effect = br.br[key].doeffectafterdelete(cast)
           for (var i = 0; i < effect.length; i++) {
@@ -103,6 +115,10 @@ export default class Fight {
     }
     // do buff
     for (var key in target.buffs) {
+      var effect = br.br[key].doeffectonroundend(target, cast)
+      for (var i = 0; i < effect.length; i++) {
+        dinfo.push(effect[i])
+      }
       if (target.buffs[key].round != -99) {
         var buff = skilldata.buffs[key]
         target.buffs[key].round--
@@ -249,6 +265,9 @@ export default class Fight {
     // buff
     for (var key in cast.buffs) {
       tmppassvalue = br.br[key].dobuffeffectbeforebedamage(skill, cast, target, tmppassvalue)
+    }
+    for (var i = 0; i < cast.passiveskills.length; i++) {
+      tmppassvalue = rs.sr[cast.passiveskills[i].id].dopassiveskilleffectbeforebedamage(skill, cast, target, tmppassvalue)
     }
     return tmppassvalue
   }

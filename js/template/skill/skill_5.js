@@ -36,6 +36,8 @@ export default class skill_5 extends skill_template {
   // do passive
   dopassiveskills(skill, cast, target) {
     var dinfo = []
+    var tmps = cast.magicadd(1)
+    dinfo.push(cast.name + "恢复了" + tmps + "点内力")
     return dinfo
   }
 

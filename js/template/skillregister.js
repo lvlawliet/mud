@@ -11,12 +11,18 @@ import skill_104 from './skill/skill_104'
 import skill_105 from './skill/skill_105'
 import skill_106 from './skill/skill_106'
 import skill_200 from './skill/skill_200'
+import skill_201 from './skill/skill_201'
+import skill_202 from './skill/skill_202'
+import skill_203 from './skill/skill_203'
+import skill_204 from './skill/skill_204'
+import skill_205 from './skill/skill_205'
 import skill_1000 from './skill/skill_1000'
 import skill_1001 from './skill/skill_1001'
 import skill_1002 from './skill/skill_1002'
 import skill_1003 from './skill/skill_1003'
 import skill_1004 from './skill/skill_1004'
 import skill_9999 from './skill/skill_9999'
+import skill_10000 from './skill/skill_10000'
 
 let instance
 
@@ -39,12 +45,18 @@ export default class SkillRegister {
       105: new skill_105(),
       106: new skill_106(),
       200: new skill_200(),
+      201: new skill_201(),
+      202: new skill_202(),
+      203: new skill_203(),
+      204: new skill_204(),
+      205: new skill_205(),
       1000: new skill_1000(),
       1001: new skill_1001(),
       1002: new skill_1002(),
       1003: new skill_1003(),
       1004: new skill_1004(),
       9999: new skill_9999(),
+      10000: new skill_10000(),
     }
   }
 }

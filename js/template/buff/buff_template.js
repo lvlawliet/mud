@@ -18,6 +18,12 @@ export default class buff_template {
     return dinfo
   }
 
+  // do buff effect on round end
+  doeffectonroundend(cast, target) {
+    var dinfo = []
+    return dinfo
+  }
+
   // do buff effect after delete
   doeffectafterdelete(cast) {
     var dinfo = []
