@@ -85,7 +85,7 @@ export default class CreateRole {
     var tmpy = canvas.height - 60
     if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
       usedata.savejob(0)
-      usedata.saveskillbag([205, 9999])
+      usedata.saveskillbag([205, 206, 9999])
       usedata.savemethodbag([3, 4, 5])
       flag = true
     }

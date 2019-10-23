@@ -126,7 +126,7 @@ export default class SkillBus {
         max: 1,
         round: 4,
         wuxing: 5,
-        profit: true,
+        profit: false,
       }
     }
 
@@ -139,7 +139,7 @@ export default class SkillBus {
         sourcecost: 0,
         job: 0,
         des: '',
-        damagebase: 0,
+        damagebase: 100,
         damageratiomin: 1.5,
         damageratiomax: 1.5,
         other: 0,
@@ -381,6 +381,20 @@ export default class SkillBus {
         damagebase: 50,
         damageratiomin: 1.1,
         damageratiomax: 1.5,
+        other: 0,
+        type: 'damage',
+        wuxing: 5,
+      },
+      206: {
+        id: 206,
+        name: '幽冥窥月',
+        cost: 20,
+        sourcecost: 1,
+        job: 3,
+        des: '',
+        damagebase: 250,
+        damageratiomin: 2.8,
+        damageratiomax: 3.2,
         other: 0,
         type: 'damage',
         wuxing: 5,

@@ -182,6 +182,27 @@ export default class actorimp {
     return realadd
   }
 
+  addbuffimp(e) {
+    var buff = skilldata.buffs[e.buff.id]
+    var tmpnumber = e.number
+    var round = e.round
+    if (this.buffs.hasOwnProperty(buff.id) == true) {
+      tmpnumber = this.buffs[buff.id].number + tmpnumber
+      if (tmpnumber > buff.max) {
+        tmpnumber = buff.max
+      }
+      round = Math.max(round, this.buffs[buff.id].round)
+      br.br[buff.id].detach(this, this.buffs[buff.id].number)
+      delete this.buffs[buff.id]
+    }
+    this.buffs[buff.id] = {
+      buff: buff,
+      number: tmpnumber,
+      round: round
+    }
+    br.br[buff.id].attach(this, tmpnumber)
+  }
+
   addbuff(buffid, number) {
     var buff = skilldata.buffs[buffid]
     var tmpnumber = number

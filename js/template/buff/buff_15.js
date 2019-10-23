@@ -11,12 +11,13 @@ export default class buff_15 extends buff_template {
   // do buff effect on round end
   doeffectonroundend(cast, target) {
     var dinfo = []
-    var damage = Math.floor(7000 + ((Math.random() * 0.4) + 0.8) * target.getphyattack() - cast.getphydefence())
+    var damage = Math.floor(50 + ((Math.random() * 0.4) + 0.8) * target.getphyattack() - cast.getphydefence())
     if (damage <= 0) {
       damage = 1
     }
     cast.hpadd(-damage)
-    dinfo.push(target.name + "的[" + skilldata.buffs[15].name + "]对" + cast.name + "造成了" + damage + "伤害")
+    target.hpadd(damage)
+    dinfo.push(target.name + "的[" + skilldata.buffs[15].name + "]对" + cast.name + "偷取了" + damage + "生命值")
     return dinfo
   }
 

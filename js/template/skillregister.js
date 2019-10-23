@@ -16,6 +16,7 @@ import skill_202 from './skill/skill_202'
 import skill_203 from './skill/skill_203'
 import skill_204 from './skill/skill_204'
 import skill_205 from './skill/skill_205'
+import skill_206 from './skill/skill_206'
 import skill_1000 from './skill/skill_1000'
 import skill_1001 from './skill/skill_1001'
 import skill_1002 from './skill/skill_1002'
@@ -50,6 +51,7 @@ export default class SkillRegister {
       203: new skill_203(),
       204: new skill_204(),
       205: new skill_205(),
+      206: new skill_206(),
       1000: new skill_1000(),
       1001: new skill_1001(),
       1002: new skill_1002(),
