@@ -8,53 +8,11 @@ export default class skill_5 extends skill_template {
     super()
   }
 
-  // do not damage or heal skill
-  dootherskill(skill, cast, target) {
-    var dinfo = []
-    return dinfo
-  }
-
-
-  // do first use buff
-  dofirstusebuff(skill, cast, target, tmppassvalue) {
-    var dinfo = []
-    return dinfo
-  }
-
-  // do buff effect after damage
-  dobuffeffectafterdamage(skill, cast, target, tmppassvalue) {
-    var dinfo = []
-    return dinfo
-  }
-
-  // do skill effect after damage
-  doeffectafterdamage(skill, cast, target, tmppassvalue) {
-    var dinfo = []
-    return dinfo
-  }
-
   // do passive
   dopassiveskills(skill, cast, target) {
     var dinfo = []
     var tmps = cast.magicadd(1)
     dinfo.push(cast.name + "恢复了" + tmps + "点内力")
-    return dinfo
-  }
-
-  // check skill replace
-  checkreplace(skill, cast, target) {
-    return skill
-  }
-
-  // do dead trigger skill or buff
-  dodeadeffect(skill, cast, target) {
-    var dinfo = []
-    return dinfo
-  }
-
-  // big skill extra describe
-  bigskilldes(skill, cast, target) {
-    var dinfo = []
     return dinfo
   }
 }

@@ -15,6 +15,11 @@ export default class skill_template {
   dopassiveskilleffectbeforebedamage(skill, cast, target, tmppassvalue) {
     return tmppassvalue
   }
+
+  // do passive skill effect after add buff
+  dopassiveskilleffectafteraddbuff(id) {
+    return 0
+  }
   
   // do first use buff
   dofirstusebuff(skill, cast, target, tmppassvalue) {
@@ -23,7 +28,7 @@ export default class skill_template {
   }
 
   // do passive effect after damage
-  dobuffeffectafterdamage(skill, cast, target, tmppassvalue) {
+  dopassiveskilleffectafterdamage(skill, cast, target, tmppassvalue) {
     var dinfo = []
     return dinfo
   }

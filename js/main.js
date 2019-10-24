@@ -86,7 +86,7 @@ export default class Main {
     }
     this.selectbar = [
       {
-        name: '木武童',
+        name: '苍鹰魄·咕咕月',
         x: tx,
         y: 130 + ty / 2
       },
@@ -143,9 +143,9 @@ export default class Main {
           if (x > tmpselect[0].x && y > tmpselect[0].y && x < tmpselect[3].x && y < tmpselect[3].y) {
             scenemanager.stopmain()
             if (scenemanager.hasballtescene()) {
-              scenemanager.restartballtescene(0)
+              scenemanager.restartballtescene(1001)
             } else {
-              var p = new BattleScene(0)
+              var p = new BattleScene(1001)
               scenemanager.addballtescene(p)
             }
           }

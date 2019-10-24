@@ -2,11 +2,13 @@ import Template from './template/template'
 import SkillBus from './template/skillbus'
 import AiRegister from './template/airegister'
 import BuffRegister from './template/buffregister'
+import SkillRegister from './template/skillregister'
 
 let tempman = new Template()
 let skilldata = new SkillBus()
 let airegister = new AiRegister()
 let br = new BuffRegister()
+let rs = new SkillRegister()
 
 export default class actorimp {
   constructor(type, e) {
@@ -182,10 +184,13 @@ export default class actorimp {
     return realadd
   }
 
-  addbuffimp(e) {
+  addbuffimp(e, target = null) {
     var buff = skilldata.buffs[e.buff.id]
     var tmpnumber = e.number
     var round = e.round
+    if (target != null) {
+      tmpnumber += target.dopassiveskilleffectafteraddbuff(buffid)
+    }
     if (this.buffs.hasOwnProperty(buff.id) == true) {
       tmpnumber = this.buffs[buff.id].number + tmpnumber
       if (tmpnumber > buff.max) {
@@ -194,6 +199,9 @@ export default class actorimp {
       round = Math.max(round, this.buffs[buff.id].round)
       br.br[buff.id].detach(this, this.buffs[buff.id].number)
       delete this.buffs[buff.id]
+    } 
+    if (tmpnumber > buff.max) {
+      tmpnumber = buff.max
     }
     this.buffs[buff.id] = {
       buff: buff,
@@ -201,9 +209,14 @@ export default class actorimp {
       round: round
     }
     br.br[buff.id].attach(this, tmpnumber)
+    this.dopassiveskilleffectafteraddbuff(buff.id)
+    return this.buffs[buff.id].number
   }
 
-  addbuff(buffid, number) {
+  addbuff(buffid, number, target = null) {
+    if (target != null) {
+      number += target.dopassiveskilleffectafteraddbuff(buffid)
+    }
     var buff = skilldata.buffs[buffid]
     var tmpnumber = number
     if (this.buffs.hasOwnProperty(buff.id) == true) {
@@ -214,12 +227,16 @@ export default class actorimp {
       br.br[buff.id].detach(this, this.buffs[buff.id].number)
       delete this.buffs[buff.id]
     }
+    if (number > buff.max) {
+      tmpnumber = buff.max
+    }
     this.buffs[buff.id] = {
       buff: buff,
       number: tmpnumber,
       round: buff.round
     }
     br.br[buff.id].attach(this, tmpnumber)
+    return this.buffs[buff.id].number
     /*
     if (this.buffs.hasOwnProperty(buff.id) == false) {
       this.buffs[buff.id] = {
@@ -262,6 +279,14 @@ export default class actorimp {
       return this.buffs[id].number
     }
     return 0
+  }
+
+  dopassiveskilleffectafteraddbuff(id) {
+    var number = 0
+    for (var key in this.passiveskills) {
+      number += rs.sr[this.passiveskills[key].id].dopassiveskilleffectafteraddbuff(id, this)
+    }
+    return number
   }
 
 }

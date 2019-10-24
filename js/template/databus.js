@@ -163,7 +163,16 @@ export default class DataBus {
       this.job = 0
       this.wuxing = [0]
     } else {
-      this.passiveskills.push(skilldata.skills[e.passiveskill])
+      for (var i = 0; i < e.passiveskill.length; i++) {
+        this.passiveskills.push(skilldata.skills[e.passiveskill[i]])
+      }
+      for (var i = 0; i < 4; i++) {
+        var tskill = skilldata.skills[e.skills[i]]
+        var index = this.skillbag.indexOf(tskill)
+        if (index != -1) {
+          this.activeskills[i] = tskill
+        }
+      }
       this.method = e
       this.job = e.job
     }

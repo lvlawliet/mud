@@ -11,7 +11,7 @@ export default class skill_9999 extends skill_template {
   // do not damage or heal skill
   dootherskill(skill, cast, target) {
     var dinfo = []
-    dinfo.push(cast.name + "只是呆呆的看着你，似乎毫无出手之意")
+    dinfo.push(cast.name + "被晕眩，无法出手")
     return dinfo
   }
 }

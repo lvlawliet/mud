@@ -5,7 +5,7 @@ import Template from './../template'
 let skilldata = new SkillBus()
 let tempman = new Template()
 
-export default class buff_15 extends buff_template {
+export default class buff_21 extends buff_template {
   constructor() {
     super()
   }
@@ -13,19 +13,19 @@ export default class buff_15 extends buff_template {
   // do buff effect on round end
   doeffectonroundend(cast, target) {
     var dinfo = []
-    var damage = Math.floor(50 + ((Math.random() * 0.4) + 0.8) * target.getphyattack() - cast.getphydefence())
+    var damage = Math.floor(30 + ((Math.random() * 0.4) + 0.8) * target.getphyattack() - cast.getphydefence())
+    damage = damage * cast.buffs[21].number
     // wuxing
     var percent = 1
     for (var i = 0; i < cast.wuxing.length; i++) {
-      percent = percent * tempman.wuxingrestrain[skilldata.buffs[15].wuxing][cast.wuxing[i]]
+      percent = percent * tempman.wuxingrestrain[skilldata.buffs[21].wuxing][cast.wuxing[i]]
     }
     damage = Math.floor(damage * percent)
     if (damage <= 0) {
       damage = 1
     }
     cast.hpadd(-damage)
-    target.hpadd(damage)
-    dinfo.push(target.name + "的[" + skilldata.buffs[15].name + "]对" + cast.name + "偷取了" + damage + "生命值")
+    dinfo.push(target.name + "的[" + skilldata.buffs[21].name + "]对" + cast.name + "造成了" + damage + "点伤害")
     return dinfo
   }
 

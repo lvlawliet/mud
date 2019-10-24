@@ -140,63 +140,59 @@ export default class BattleScene {
               if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
                 this.pop = -1
                 this.battledata = []
-                this.battledata.push("Left")
-                var tmpd = fightman.work(this.playerA.activeskills[i].id, this.playerA, this.playerB)
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
+                var trand = Math.floor(Math.random() * 5) - 2 + this.playerA.getshenfa() - this.playerB.getshenfa() 
+                var queue = []
+                if (trand > 0) {
+                  queue = [0, 1]
+                }  else {
+                  queue = [1, 0]
                 }
-
-                // checkalive
-                var tmpa = fightman.checkalive(this.playerA, this.playerB)
-                var result = tmpa.result
-                var tmpd = tmpa.info
-
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-                if (result != 0) {
-                  this.result = result
-                  if (result == 1) {
-                    this.battledata.push(this.playerA.name + "获胜")
-                  } else
-                  if (result == 2) {
-                    this.battledata.push(this.playerB.name + "获胜")
-                  } else
-                  if (result == 3) {
-                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                for (var t = 0; t < queue.length; t++) {
+                  if (queue[t] == 0) {
+                    if (t == 0) {
+                      this.battledata.push("+Left")
+                    } else {
+                      this.battledata.push("+Right")
+                    }
+                    var tmpd = fightman.work(this.playerA.activeskills[i].id, this.playerA, this.playerB)
+                    for (var k = 0; k < tmpd.length; k++) {
+                      this.battledata.push(tmpd[k])
+                    }
+                  } else {
+                    // ai
+                    if (t == 0) {
+                      this.battledata.push("Left+")
+                    } else {
+                      this.battledata.push("Right+")
+                    }
+                    var skill = this.playerB.ai.work(this.playerB, this.playerA)
+                    var tmpd = fightman.work(skill.id, this.playerB, this.playerA)
+                    for (var k = 0; k < tmpd.length; k++) {
+                      this.battledata.push(tmpd[k])
+                    }
                   }
-                  this.battledata.push("点击任意地方重新开始")
-                  break;
-                }
-                // ai
-                this.battledata.push("Right")
-                var skill = this.playerB.ai.work(this.playerB, this.playerA)
-                var tmpd = fightman.work(skill.id, this.playerB, this.playerA)
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
+                  // checkalive
+                  var tmpa = fightman.checkalive(this.playerA, this.playerB)
+                  var result = tmpa.result
+                  var tmpd = tmpa.info
 
-                // checkalive
-                var tmpa = fightman.checkalive(this.playerA, this.playerB)
-                var result = tmpa.result
-                var tmpd = tmpa.info
-
-                for (var k = 0; k < tmpd.length; k++) {
-                  this.battledata.push(tmpd[k])
-                }
-                if (result != 0) {
-                  this.result = result
-                  if (result == 1) {
-                    this.battledata.push(this.playerA.name + "获胜")
-                  } else
-                  if (result == 2) {
-                    this.battledata.push(this.playerB.name + "获胜")
-                  } else
-                  if (result == 3) {
-                    this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                  for (var k = 0; k < tmpd.length; k++) {
+                    this.battledata.push(tmpd[k])
                   }
-                  this.battledata.push("点击任意地方重新开始")
-                  break;
+                  if (result != 0) {
+                    this.result = result
+                    if (result == 1) {
+                      this.battledata.push(this.playerA.name + "获胜")
+                    } else
+                      if (result == 2) {
+                        this.battledata.push(this.playerB.name + "获胜")
+                      } else
+                        if (result == 3) {
+                          this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                        }
+                    this.battledata.push("点击任意地方重新开始")
+                    break;
+                  }
                 }
 
                 this.battledata.push("Middle")
@@ -319,17 +315,27 @@ export default class BattleScene {
     canvasTextSplit(canvas, tx, y)
     y += 20
     // main word
-    canvasTextAutoLine('战斗记录:', canvas, tx, y, tx)
+    canvasTextCenter('战斗记录:', canvas, tx, y, tx)
     y += 20
 
     for (var i = 0; i < this.battledata.length; i++) {
-      if (this.battledata[i] == "Left") {
+      if (this.battledata[i] == "+Left") {
         y = canvasTextAutoLine("先手", canvas, tx, y, 20)
       } else
-      if (this.battledata[i] == "Right") {
+      if (this.battledata[i] == "Left+") {
+        canvasTextRight("先手", canvas, tx, y, 20)
+        y += 20
+      } else
+      if (this.battledata[i] == "Right+") {
         canvasTextSplit(canvas, tx, y)
         y += 20
         canvasTextRight("后手", canvas, tx, y, 20)
+        y += 20
+      } else
+      if (this.battledata[i] == "+Right") {
+        canvasTextSplit(canvas, tx, y)
+        y += 20
+        canvasTextAutoLine("后手", canvas, tx, y, 20)
         y += 20
       } else
       if (this.battledata[i] == "Middle") {

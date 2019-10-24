@@ -17,6 +17,14 @@ import skill_203 from './skill/skill_203'
 import skill_204 from './skill/skill_204'
 import skill_205 from './skill/skill_205'
 import skill_206 from './skill/skill_206'
+import skill_207 from './skill/skill_207'
+import skill_208 from './skill/skill_208'
+import skill_209 from './skill/skill_209'
+import skill_210 from './skill/skill_210'
+import skill_211 from './skill/skill_211'
+import skill_212 from './skill/skill_212'
+import skill_213 from './skill/skill_213'
+import skill_214 from './skill/skill_214'
 import skill_1000 from './skill/skill_1000'
 import skill_1001 from './skill/skill_1001'
 import skill_1002 from './skill/skill_1002'
@@ -52,6 +60,14 @@ export default class SkillRegister {
       204: new skill_204(),
       205: new skill_205(),
       206: new skill_206(),
+      207: new skill_207(),
+      208: new skill_208(),
+      209: new skill_209(),
+      210: new skill_210(),
+      211: new skill_211(),
+      212: new skill_212(),
+      213: new skill_213(),
+      214: new skill_214(),
       1000: new skill_1000(),
       1001: new skill_1001(),
       1002: new skill_1002(),

@@ -179,6 +179,8 @@ export default class Fight {
   work(id, cast, target) {
     var dinfo = []
     var skill = skilldata.skills[id]
+    // check 
+    skill = this.checkbuffcontrol(skill, cast, target)
     // source 
     if (this.checkcost(cast, skill) == false) {
       dinfo.push(cast.getsourcename() + "不足以释放[" + skill.name + "]")
@@ -282,6 +284,13 @@ export default class Fight {
         dinfo.push(effect[i])
       }
     }
+    // skill
+    for (var key in cast.passiveskills) {
+      var effect = rs.sr[cast.passiveskills[key].id].dopassiveskilleffectafterdamage(skill, cast, target, tmppassvalue)
+      for (var i = 0; i < effect.length; i++) {
+        dinfo.push(effect[i])
+      }
+    }
     return dinfo
   }
 
@@ -321,6 +330,15 @@ export default class Fight {
   // check skill replace
   checkreplace(skill, cast, target) {
     return rs.sr[skill.id].checkreplace(skill, cast, target)
+  }
+
+  // check buff control
+  checkbuffcontrol(skill, cast, target) {
+    var tmpskill = skill
+    for (var key in cast.buffs) {
+      tmpskill = br.br[key].dobuffcontrol(skill, cast, target)
+    }
+    return tmpskill
   }
 
   dodeadeffect(skill, cast, target) {

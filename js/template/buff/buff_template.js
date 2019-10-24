@@ -1,6 +1,11 @@
 export default class buff_template {
   constructor() {
   }
+
+  // do buff control
+  dobuffcontrol(skill, cast, target) {
+    return skill
+  }
   
   // do buff or passive effect before be damage
   dobuffeffectbeforebedamage(skill, cast, target, tmppassvalue) {
