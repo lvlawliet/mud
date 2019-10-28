@@ -30,7 +30,7 @@ export default class ai_jiayu extends ai_template {
     if (flag && cast.magicnow >= 20 && cast.sourcenow >= 1) {
       return skilldata.skills[206]
     }
-    if (cast.magicnow >= 100 && cast.sourcenow > 3) {
+    if (cast.magicnow >= 100 && cast.sourcenow >= 3) {
       return skilldata.skills[208]
     }
     return skilldata.skills[207]

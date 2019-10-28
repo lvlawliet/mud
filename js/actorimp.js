@@ -20,7 +20,7 @@ export default class actorimp {
       this.bili = e.property['bili']
       this.dingli = e.property['dingli']
       this.gengu = e.property['gengu']
-      this.hpbase = 2000
+      this.hpbase = 4000
       this.activeskills = []
       this.wuxing = [0]
       for (var i = 0; i < e.activeskills.length; i++) {
@@ -109,7 +109,7 @@ export default class actorimp {
   }
 
   gethpmax() {
-    return this.hpbase + 20 * this.gettizhi()
+    return this.hpbase + 80 * this.gettizhi()
   }
 
   getphyattack() {

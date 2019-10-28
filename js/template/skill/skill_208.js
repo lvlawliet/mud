@@ -19,7 +19,7 @@ export default class skill_208 extends skill_template {
   // do skill effect after damage
   doeffectafterdamage(skill, cast, target, tmppassvalue) {
     var dinfo = []
-    if (target.buffs.hasOwnProperty(15) == true) {
+    if (target.buffs.hasOwnProperty(15) == true && tmppassvalue.type != -1) {
       var buff = skilldata.buffs[16]
       target.addbuff(buff.id, 1)
       dinfo.push(cast.name + "的[" + skill.name + "]对" + target.name + "产生了[" + buff.name + "]")

@@ -193,6 +193,9 @@ export default class BattleScene {
                     this.battledata.push("点击任意地方重新开始")
                     break;
                   }
+                } 
+                if (result != 0) {
+                  break
                 }
 
                 this.battledata.push("Middle")
