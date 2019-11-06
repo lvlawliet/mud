@@ -83,4 +83,21 @@ export default class SceneManager {
     this.scene['main'].stop()
   }
 
+  // search scene
+  addsearch(e) {
+    this.scene['search'] = e
+  }
+
+  hassearch() {
+    return this.scene.hasOwnProperty('search')
+  }
+
+  restartsearch(mapid, e = false) {
+    this.scene['search'].restart(mapid, e)
+  }
+
+  stopsearch() {
+    this.scene['search'].stop()
+  }
+
 }

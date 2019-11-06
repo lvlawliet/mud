@@ -29,6 +29,8 @@ export default class DataBus {
     this.skillbag = []
     this.methodbag = []
     this.wuxing = [0]
+    this.local = 'main'
+    this.mapid = -1
 
     // const string
     this.pro2string = {
@@ -125,13 +127,21 @@ export default class DataBus {
   
   saveskillbag(e) {
     for (var i = 0; i < e.length; i++) {
-      this.skillbag.push(skilldata.skills[e[i]])
+      if (this.skillbag.indexOf(skilldata.skills[e[i]]) > -1) {
+
+      } else {
+        this.skillbag.push(skilldata.skills[e[i]])
+      }
     }
   }
 
   savemethodbag(e) {
     for (var i = 0; i < e.length; i++) {
-      this.methodbag.push(tempman.methods[e[i]])
+      if (this.methodbag.indexOf(tempman.methods[e[i]]) > -1) {
+
+      } else {
+        this.methodbag.push(tempman.methods[e[i]])
+      }
     }
   }
 

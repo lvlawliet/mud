@@ -14,6 +14,7 @@ export default class actorimp {
   constructor(type, e) {
     if (type == 0) { // player
       this.name = e.name
+      this.id = -1
       this.job = e.job
       this.tizhi = e.property['tizhi']
       this.shenfa = e.property['shenfa']
@@ -34,6 +35,7 @@ export default class actorimp {
       this.passiveskills = e.passiveskills
     } else if (type == 1) { // npc
       this.name = e.name
+      this.id = e.id
       this.job = e.job
       this.tizhi = e.tizhi
       this.shenfa = e.shenfa

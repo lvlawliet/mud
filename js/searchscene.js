@@ -1,9 +1,7 @@
 import Template from './template/template'
 import DataBus from './template/databus'
 import BattleScene from './battlescene'
-import SearchScene from './searchscene'
 import SceneManager from './scenemanager'
-import SkillBus from './template/skillbus'
 import {
   canvasTextAutoLine,
   canvasTextRight,
@@ -17,24 +15,17 @@ let tempman = new Template()
 let tx = canvas.width * 1 / 12
 let ty = (canvas.height - 310) / 3
 let scenemanager = new SceneManager()
-let skilldata = new SkillBus()
 
-/*
- * pop的说明
- * -1.主界面
- * 0.属性界面
- * 1.一级技能装备界面
- * 2-5.二级装备界面
- * 6.心法装备界面
- */
-export default class Main {
-  constructor() {
+export default class SearchScene {
+  constructor(mapid, e = false) {
     ctx.font = "14px Georgia";
     ctx.fillStyle = '#FFFFFF'
     this.playername = usedata.getdata('name')
     this.bindLoop = this.loop.bind(this)
     this.x = 0
     this.y = 0
+    this.finish = e
+    this.mapid = mapid
     window.requestAnimationFrame(
       this.bindLoop,
       canvas
@@ -68,26 +59,7 @@ export default class Main {
       }
     ]
     this.selectpos = {
-      0: [
-        {
-          x: tx,
-          y: 130,
-        },
-        {
-          x: tx * 11,
-          y: 130,
-        },
-        {
-          x: tx,
-          y: 130 + ty,
-        },
-        {
-          x: tx * 11,
-          y: 130 + ty
-        }
-      ],
-      1: [
-        {
+      0: [{
           x: tx,
           y: 130 + ty + 20,
         },
@@ -104,8 +76,7 @@ export default class Main {
           y: 130 + ty + ty + 20,
         }
       ],
-      2: [
-        {
+      1: [{
           x: tx,
           y: 130 + 2 * ty + 40,
         },
@@ -123,33 +94,24 @@ export default class Main {
         }
       ],
     }
-    this.selectbar = [
-      {
-        name: '苍鹰魄·咕咕月',
-        x: tx,
-        y: 130 + ty / 2
-      },
-      {
-        name: '世外探索',
+    this.selectbar = [{
         x: tx,
         y: 150 + ty + ty / 2
       },
       {
-        name: '无限领域',
         x: tx,
         y: 170 + 2 * ty + ty / 2
       },
-    ] 
+    ]
     this.initEvent()
     this.stopflag = false
     this.pop = -1
     this.page = 0
     this.skillshow = []
     this.methodshow = []
-    usedata.local = 'main'
-    usedata.mapid = -1
+    this.npcid = this.getrandnpc()
 
-    this.restart = function() {
+    this.restart = function(mapid, e = false) {
       this.x = 0
       this.y = 0
       this.stopflag = false
@@ -157,8 +119,9 @@ export default class Main {
       this.page = 0
       this.skillshow = []
       this.methodshow = []
-      usedata.local = 'main'
-      usedata.mapid = -1
+      this.finish = e
+      this.mapid = mapid
+      this.npcid = this.getrandnpc()
       window.requestAnimationFrame(
         this.bindLoop,
         canvas
@@ -195,29 +158,27 @@ export default class Main {
           var tmpselect = this.selectpos[key]
           if (x > tmpselect[0].x && y > tmpselect[0].y && x < tmpselect[3].x && y < tmpselect[3].y) {
             if (key == 0) {
-              scenemanager.stopmain()
-              if (scenemanager.hasballtescene()) {
-                scenemanager.restartballtescene(2)
+              if (this.finish == false) {
+                scenemanager.stopsearch()
+                if (scenemanager.hasballtescene()) {
+                  scenemanager.restartballtescene(this.npcid)
+                } else {
+                  var p = new BattleScene(this.npcid)
+                  scenemanager.addballtescene(p)
+                }
               } else {
-                var p = new BattleScene(2)
-                scenemanager.addballtescene(p)
+                this.mapid = this.getnextmapid(0)
+                usedata.mapid = this.mapid
+                this.npcid = this.getrandnpc()
+                this.finish = false
               }
-              /*
-              for (key in skilldata.skills) {
-                var skill = skilldata.skills[key]
-                console.log(key + ',' + skill.name + ',' + skill.type)
-              }
-              */
             } else
             if (key == 1) {
-              usedata.local = 'search'
-              usedata.mapid = 1
-              scenemanager.stopmain()
-              if (scenemanager.hassearch()) {
-                scenemanager.restartsearch(1)
-              } else {
-                var p = new SearchScene(1)
-                scenemanager.addsearch(p)
+              if (this.finish == true) {
+                this.mapid = this.getnextmapid(1)
+                usedata.mapid = this.mapid
+                this.npcid = this.getrandnpc()
+                this.finish = false
               }
             }
           }
@@ -319,7 +280,6 @@ export default class Main {
           this.pop = 1
         }
       }
-
     }
   }
 
@@ -483,23 +443,45 @@ export default class Main {
     y = canvasTextAutoLine("职业：" + tempman.job[usedata.getdata('job')].name, canvas, tx, y, 20)
     // split
     canvasTextSplit(canvas, tx, y)
+    y += 20
+    // text
+    var maptemp = tempman.map[this.mapid]
+    y = canvasTextAutoLine('你来到了[' + maptemp.name + ']', canvas, tx, y, 20)
+    y = canvasTextAutoLine(maptemp.des, canvas, tx, y, 20)
 
     // draw select
-    for (var key in this.selectpos) {
-      var tmppos = this.selectpos[key]
-      ctx.strokeStyle = "white";
-      ctx.moveTo(tmppos[0].x, tmppos[0].y)
-      ctx.lineTo(tmppos[1].x, tmppos[1].y)
-      ctx.moveTo(tmppos[0].x, tmppos[0].y)
-      ctx.lineTo(tmppos[2].x, tmppos[2].y)
-      ctx.moveTo(tmppos[3].x, tmppos[3].y)
-      ctx.lineTo(tmppos[1].x, tmppos[1].y)
-      ctx.moveTo(tmppos[3].x, tmppos[3].y)
-      ctx.lineTo(tmppos[2].x, tmppos[2].y)
-      ctx.stroke();
-    }
-    for (var i = 0; i < this.selectbar.length; i++) {
-      canvasTextCenter(this.selectbar[i].name, canvas, 0, this.selectbar[i].y, 0)
+    if (this.finish == false) {
+      for (var key = 0; key < 1; key++) {
+        var tmppos = this.selectpos[key]
+        ctx.strokeStyle = "white";
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.stroke();
+      }
+      canvasTextCenter(tempman.npc[this.npcid].name, canvas, 0, this.selectbar[0].y, 0)
+    } else {
+      for (var key = 0; key < 2; key++) {
+        var tmppos = this.selectpos[key]
+        ctx.strokeStyle = "white";
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.stroke();
+      }
+      for (var i = 0; i < 2; i++) {
+        canvasTextCenter(tempman.map[this.mapid].choose[i].des, canvas, 0, this.selectbar[i].y, 0)
+      }
     }
 
     // bottom
@@ -537,5 +519,41 @@ export default class Main {
         canvas
       )
     }
+  }
+
+  // get rand npc
+  getrandnpc() {
+    var maptmp = tempman.map[this.mapid]
+    var total = 0
+    for (var i = 0; i < maptmp.npc.length; i++) {
+      total += maptmp.npc[i].value
+    }
+    var rand = Math.floor(Math.random() * total)
+    for (var i = 0; i < maptmp.npc.length; i++) {
+      if (rand < maptmp.npc[i].value) {
+        return maptmp.npc[i].id
+      } else {
+        rand -= maptmp.npc[i].value
+      }
+    }
+    return 0
+  }
+
+  // get next mapdi
+  getnextmapid(e) {
+    var maptmp = tempman.map[this.mapid].choose[e].map
+    var total = 0
+    for (var i = 0; i < maptmp.length; i++) {
+      total += maptmp[i].value
+    }
+    var rand = Math.floor(Math.random() * total)
+    for (var i = 0; i < maptmp.length; i++) {
+      if (rand < maptmp[i].value) {
+        return maptmp[i].id
+      } else {
+        rand -= maptmp[i].value
+      }
+    }
+    return 1
   }
 }

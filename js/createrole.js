@@ -3,7 +3,9 @@ import DataBus from './template/databus'
 import SkillBus from './template/skillbus'
 import SceneManager from './scenemanager'
 
-import { canvasTextAutoLine } from './util/utilf'
+import {
+  canvasTextAutoLine
+} from './util/utilf'
 
 let ctx = canvas.getContext('2d')
 let usedata = new DataBus()
@@ -13,7 +15,7 @@ let tx = canvas.width * 1 / 12
 
 
 export default class CreateRole {
-//class CreateRole {
+  //class CreateRole {
   constructor(e) {
     // evn
     ctx.font = "14px Georgia";
@@ -31,12 +33,12 @@ export default class CreateRole {
     )
     this.stopflag = false
     this.initEvent()
-    
-    this.stop = function () {
+
+    this.stop = function() {
       this.stopflag = true
     }
 
-    this.restart = function () {
+    this.restart = function() {
       this.stopflag = false
       this.page = 0
       window.requestAnimationFrame(
@@ -48,9 +50,9 @@ export default class CreateRole {
 
   render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    if (this.page==0) {
+    if (this.page == 0) {
       this.drawpage1()
-    } else if (this.page==1) {
+    } else if (this.page == 1) {
       this.drawpage2()
     }
   }
@@ -64,7 +66,7 @@ export default class CreateRole {
       }
     }
   }
-  
+
   checkpage1(x, y) {
     var tmpx = canvas.width / 4 - canvas.width / 15
     var tmpy = canvas.height - 60
@@ -85,8 +87,9 @@ export default class CreateRole {
     var tmpy = canvas.height - 60
     if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
       usedata.savejob(0)
-      usedata.saveskillbag([200, 201, 202, 203, 205, 206, 207, 208, 210, 211, 212, 213, 9999])
-      usedata.savemethodbag([3, 4, 5])
+      //usedata.saveskillbag([200, 201, 202, 203, 205, 206, 207, 208, 210, 211, 212, 213, 9999])
+      //usedata.savemethodbag([0, 3, 4, 5, ])
+      usedata.savemethodbag([0])
       flag = true
     }
     /*
@@ -116,10 +119,10 @@ export default class CreateRole {
     for (var key in usedata.property) {
       var tmp = usedata.datatostring(key)
       ctx.fillText(tmp.name + ':' + this.tmppro[i], tx, 90 + (2 * i + 1) * 20)
-      ctx.fillText(tmp.des, tx, 90 + 2 * ( i + 1 ) * 20)
+      ctx.fillText(tmp.des, tx, 90 + 2 * (i + 1) * 20)
       i++
     }
-    ctx.fillText('重置', canvas.width / 4 - canvas.width/ 15, canvas.height - 60)
+    ctx.fillText('重置', canvas.width / 4 - canvas.width / 15, canvas.height - 60)
     ctx.fillText('确定', canvas.width * 3 / 4 - canvas.width / 15, canvas.height - 60)
   }
 
@@ -149,10 +152,9 @@ export default class CreateRole {
     //ctx.fillText('剑', canvas.width * 3 / 4 - canvas.width / 15, canvas.height - 60)
   }
 
-  update() {
-  }
+  update() {}
 
-  
+
 
   initEvent() {
     wx.onTouchStart(((e) => {

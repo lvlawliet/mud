@@ -10,6 +10,7 @@ import actorimp from './actorimp'
 import Template from './template/template'
 import SceneManager from './scenemanager'
 import Fight from './fight'
+import SearchScene from './searchscene'
 
 import {
   canvasTextAutoLine,
@@ -140,11 +141,11 @@ export default class BattleScene {
               if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
                 this.pop = -1
                 this.battledata = []
-                var trand = Math.floor(Math.random() * 5) - 2 + this.playerA.getshenfa() - this.playerB.getshenfa() 
+                var trand = Math.floor(Math.random() * 11) - 5 + this.playerA.getshenfa() - this.playerB.getshenfa()
                 var queue = []
-                if (trand > 0) {
+                if (trand >= 0) {
                   queue = [0, 1]
-                }  else {
+                } else {
                   queue = [1, 0]
                 }
                 for (var t = 0; t < queue.length; t++) {
@@ -184,16 +185,44 @@ export default class BattleScene {
                     if (result == 1) {
                       this.battledata.push(this.playerA.name + "获胜")
                     } else
-                      if (result == 2) {
-                        this.battledata.push(this.playerB.name + "获胜")
-                      } else
-                        if (result == 3) {
-                          this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                    if (result == 2) {
+                      this.battledata.push(this.playerB.name + "获胜")
+                    } else
+                    if (result == 3) {
+                      this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
+                    }
+                    if (result == 1) {
+                      var npc = tempman.npc[this.playerB.id]
+                      if (npc.drop.length != 0) {
+                        var total = 0
+                        for (var i = 0; i < npc.drop.length; i++) {
+                          total += npc.drop[i].value
                         }
+                        var rand = Math.floor(Math.random() * total)
+                        console.log(rand)
+                        for (var i = 0; i < npc.drop.length; i++) {
+                          if (rand < npc.drop[i].value) {
+                            if (npc.drop[i].id > 0) {
+                              if (npc.drop[i].type == 'skill') {
+                                usedata.saveskillbag([npc.drop[i].id])
+                                this.battledata.push("获得技能[" + skilldata.skills[npc.drop[i].id].name + "]")
+                              } else
+                              if (npc.drop[i].type == 'method') {
+                                usedata.savemethodbag([npc.drop[i].id])
+                                this.battledata.push("获得心法[" + tempman.methods[npc.drop[i].id].name + "]")
+                              }
+                            }
+                            break
+                          } else {
+                            rand -= npc.drop[i].value
+                          }
+                        }
+                      }
+                    }
                     this.battledata.push("点击任意地方重新开始")
                     break;
                   }
-                } 
+                }
                 if (result != 0) {
                   break
                 }
@@ -222,6 +251,34 @@ export default class BattleScene {
                   if (result == 3) {
                     this.battledata.push(this.playerA.name + "与" + this.playerB.name + "同归于尽")
                   }
+                  if (result == 1) {
+                    var npc = tempman.npc[this.playerB.id]
+                    if (npc.drop.length != 0) {
+                      var total = 0
+                      for (var i = 0; i < npc.drop.length; i++) {
+                        total += npc.drop[i].value
+                      }
+                      var rand = Math.floor(Math.random() * total)
+                      console.log(rand)
+                      for (var i = 0; i < npc.drop.length; i++) {
+                        if (rand < npc.drop[i].value) {
+                          if (npc.drop[i].id > 0) {
+                            if (npc.drop[i].type == 'skill') {
+                              usedata.saveskillbag([npc.drop[i].id])
+                              this.battledata.push("获得技能[" + skilldata.skills[npc.drop[i].id].name + "]")
+                            } else
+                            if (npc.drop[i].type == 'method') {
+                              usedata.savemethodbag([npc.drop[i].id])
+                              this.battledata.push("获得心法[" + tempman.methods[npc.drop[i].id].name + "]")
+                            }
+                          }
+                          break
+                        } else {
+                          rand -= npc.drop[i].value
+                        }
+                      }
+                    }
+                  }
                   this.battledata.push("点击任意地方重新开始")
                   break;
                 }
@@ -236,11 +293,22 @@ export default class BattleScene {
         }
       } else {
         scenemanager.stopballtescene()
-        if (scenemanager.hasmain()) {
-          scenemanager.restartmain()
-        } else {
-          var p = new Main()
-          scenemanager.addmain(p)
+        console.log(usedata.local + ' ' + this.result)
+        if (usedata.local == 'main' || this.result != 1) {
+          if (scenemanager.hasmain()) {
+            scenemanager.restartmain()
+          } else {
+            var p = new Main()
+            scenemanager.addmain(p)
+          }
+        } else 
+        if (usedata.local == 'search') {
+          if (scenemanager.hassearch()) {
+            scenemanager.restartsearch(usedata.mapid, true)
+          } else {
+            var p = new SearchScene(usedata.mapid, true)
+            scenemanager.addsearch(p)
+          }
         }
       }
     }
