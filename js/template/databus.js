@@ -29,6 +29,15 @@ export default class DataBus {
     this.skillbag = []
     this.methodbag = []
     this.wuxing = [0]
+    // limit
+    this.limit_job = -1
+    this.limit_activeskills = [null, null, null, null]
+    this.limit_passiveskills = []
+    this.limit_method = null
+    this.limit_skillbag = []
+    this.limit_methodbag = []
+    this.limit_wuxing = [0]
+    // end
     this.local = 'main'
     this.mapid = -1
 
@@ -49,6 +58,9 @@ export default class DataBus {
         break
       case 'job':
         return this.job
+        break
+      case 'limit_job':
+        return this.limit_job
         break
       case 'tizhi':
       case 'shenfa':
@@ -148,6 +160,7 @@ export default class DataBus {
   savejob(e) {
     this.job = e
   }
+
   saveskill(idx, e) {
     // check
     if (this.job != 0 && e.job != this.job) {
@@ -187,4 +200,70 @@ export default class DataBus {
       this.job = e.job
     }
   }
+  
+  // limit  
+  savelimit_skillbag(e) {
+    for (var i = 0; i < e.length; i++) {
+      if (this.limit_skillbag.indexOf(skilldata.skills[e[i]]) > -1) {
+
+      } else {
+        this.limit_skillbag.push(skilldata.skills[e[i]])
+      }
+    }
+  }
+
+  savelimit_methodbag(e) {
+    for (var i = 0; i < e.length; i++) {
+      if (this.limit_methodbag.indexOf(tempman.methods[e[i]]) > -1) {
+
+      } else {
+        this.limit_methodbag.push(tempman.methods[e[i]])
+      }
+    }
+  }
+
+  savelimit_job(e) {
+    this.limit_job = e
+  }
+
+  savelimit_skill(idx, e) {
+    // check
+    if (this.limit_job != 0 && e.job != this.limit_job) {
+      return false
+    }
+
+    for (var i = 0; i < this.limit_activeskills.length; i++) {
+      if (this.limit_activeskills[i] != null) {
+        if (this.limit_activeskills[i].id == e.id) {
+          this.limit_activeskills[i] = null
+        }
+      }
+    }
+    this.limit_activeskills[idx] = e
+    return true
+  }
+  
+  savelimit_method(e) {
+    this.limit_activeskills = [null, null, null, null]
+    this.limit_passiveskills = []
+    if (e.id == 0) {
+      this.limit_method = null
+      this.limit_job = 0
+      this.limit_wuxing = [0]
+    } else {
+      for (var i = 0; i < e.passiveskill.length; i++) {
+        this.limit_passiveskills.push(skilldata.skills[e.passiveskill[i]])
+      }
+      for (var i = 0; i < 4; i++) {
+        var tskill = skilldata.skills[e.skills[i]]
+        var index = this.limit_skillbag.indexOf(tskill)
+        if (index != -1) {
+          this.limit_activeskills[i] = tskill
+        }
+      }
+      this.limit_method = e
+      this.limit_job = e.job
+    }
+  }
+  // end
 }

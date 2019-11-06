@@ -100,4 +100,21 @@ export default class SceneManager {
     this.scene['search'].stop()
   }
 
+  // limit scene
+  addlimit(e) {
+    this.scene['limit'] = e
+  }
+
+  haslimit() {
+    return this.scene.hasOwnProperty('limit')
+  }
+
+  restartlimit(mapid, e = false) {
+    this.scene['limit'].restart(mapid, e)
+  }
+
+  stoplimit() {
+    this.scene['limit'].stop()
+  }
+
 }

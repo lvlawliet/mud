@@ -1,10 +1,7 @@
 import Template from './template/template'
 import DataBus from './template/databus'
 import BattleScene from './battlescene'
-import SearchScene from './searchscene'
-import LimitScene from './limitscene'
 import SceneManager from './scenemanager'
-import SkillBus from './template/skillbus'
 import {
   canvasTextAutoLine,
   canvasTextRight,
@@ -18,18 +15,9 @@ let tempman = new Template()
 let tx = canvas.width * 1 / 12
 let ty = (canvas.height - 310) / 3
 let scenemanager = new SceneManager()
-let skilldata = new SkillBus()
 
-/*
- * pop的说明
- * -1.主界面
- * 0.属性界面
- * 1.一级技能装备界面
- * 2-5.二级装备界面
- * 6.心法装备界面
- */
-export default class Main {
-  constructor() {
+export default class LimitScene {
+  constructor(mapid, e = false) {
     ctx.font = "14px Georgia";
     ctx.fillStyle = '#FFFFFF'
     this.playername = usedata.getdata('name')
@@ -71,70 +59,67 @@ export default class Main {
     this.selectpos = {
       0: [{
           x: tx,
-          y: 130,
+          y: 150,
         },
         {
           x: tx * 11,
-          y: 130,
+          y: 150,
         },
         {
           x: tx,
-          y: 130 + ty,
+          y: 150 + ty,
         },
         {
           x: tx * 11,
-          y: 130 + ty
+          y: 150 + ty
         }
       ],
       1: [{
           x: tx,
-          y: 130 + ty + 20,
+          y: 150 + ty + 20,
         },
         {
           x: tx * 11,
-          y: 130 + ty + 20,
+          y: 150 + ty + 20,
         },
         {
           x: tx,
-          y: 130 + ty + ty + 20,
+          y: 150 + ty + ty + 20,
         },
         {
           x: tx * 11,
-          y: 130 + ty + ty + 20,
+          y: 150 + ty + ty + 20,
         }
       ],
       2: [{
           x: tx,
-          y: 130 + 2 * ty + 40,
+          y: 150 + 2 * ty + 40,
         },
         {
           x: tx * 11,
-          y: 130 + 2 * ty + 40,
+          y: 150 + 2 * ty + 40,
         },
         {
           x: tx,
-          y: 130 + 3 * ty + 40,
+          y: 150 + 3 * ty + 40,
         },
         {
           x: tx * 11,
-          y: 130 + 3 * ty + 40,
+          y: 150 + 3 * ty + 40,
         }
       ],
     }
     this.selectbar = [{
-        name: '苍鹰魄·咕咕月',
         x: tx,
-        y: 130 + ty / 2
+        y: 150 + ty / 2
       },
       {
-        name: '世外探索',
         x: tx,
-        y: 150 + ty + ty / 2
+        y: 150 + ty + ty / 2 + 20
       },
       {
-        name: '无限领域',
         x: tx,
-        y: 170 + 2 * ty + ty / 2
+        y: 150 + 2 * ty + ty / 2 + 40
       },
     ]
     this.initEvent()
@@ -143,10 +128,10 @@ export default class Main {
     this.page = 0
     this.skillshow = []
     this.methodshow = []
-    usedata.local = 'main'
-    usedata.mapid = -1
+    this.finish = e
+    this.mapid = mapid
 
-    this.restart = function() {
+    this.restart = function(mapid, e = false) {
       this.x = 0
       this.y = 0
       this.stopflag = false
@@ -154,8 +139,8 @@ export default class Main {
       this.page = 0
       this.skillshow = []
       this.methodshow = []
-      usedata.local = 'main'
-      usedata.mapid = -1
+      this.finish = e
+      this.mapid = mapid
       window.requestAnimationFrame(
         this.bindLoop,
         canvas
@@ -191,43 +176,7 @@ export default class Main {
         for (var key in this.selectpos) {
           var tmpselect = this.selectpos[key]
           if (x > tmpselect[0].x && y > tmpselect[0].y && x < tmpselect[3].x && y < tmpselect[3].y) {
-            if (key == 0) {
-              scenemanager.stopmain()
-              if (scenemanager.hasballtescene()) {
-                scenemanager.restartballtescene(2)
-              } else {
-                var p = new BattleScene(2)
-                scenemanager.addballtescene(p)
-              }
-              /*
-              for (key in skilldata.skills) {
-                var skill = skilldata.skills[key]
-                console.log(key + ',' + skill.name + ',' + skill.type)
-              }
-              */
-            } else
-            if (key == 1) {
-              usedata.local = 'search'
-              usedata.mapid = 1
-              scenemanager.stopmain()
-              if (scenemanager.hassearch()) {
-                scenemanager.restartsearch(1)
-              } else {
-                var p = new SearchScene(1)
-                scenemanager.addsearch(p)
-              }
-            } else
-            if (key == 2) {
-              usedata.local = 'limit'
-              usedata.mapid = 1
-              scenemanager.stopmain()
-              if (scenemanager.haslimit()) {
-                scenemanager.restartlimit(1)
-              } else {
-                var p = new LimitScene(1)
-                scenemanager.addlimit(p)
-              }
-            }
+
           }
         }
         for (var i = 0; i < this.operatebarpos.length; i++) {
@@ -271,7 +220,7 @@ export default class Main {
           for (var i = 0; i < 4; ++i) {
             if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
               if (i < this.skillshow.length) {
-                var flag = usedata.saveskill(this.pop - 2, this.skillshow[i])
+                var flag = usedata.savelimit_skill(this.pop - 2, this.skillshow[i])
                 if (flag == true) {
                   this.pop = 1
                   this.page = 0
@@ -306,7 +255,7 @@ export default class Main {
           for (var i = 0; i < 4; ++i) {
             if (y > dy + 5 && y < dy + 3 * canvas.height / 20 - 5) {
               if (i < this.methodshow.length) {
-                usedata.savemethod(this.methodshow[i])
+                usedata.savelimit_method(this.methodshow[i])
                 this.pop = 1
                 this.page = 0
               }
@@ -327,8 +276,8 @@ export default class Main {
           this.pop = 1
         }
       }
-
     }
+
   }
 
   dopopwork() {
@@ -344,18 +293,18 @@ export default class Main {
       y = canvasTextAutoLine("定力：" + usedata.getdata('dingli'), canvas, x + dx, y, dy)
       y = canvasTextAutoLine("根骨：" + usedata.getdata('gengu'), canvas, x + dx, y, dy)
       y = canvasTextAutoLine("技能：", canvas, x, y, dy)
-      for (var i = 0; i < usedata.activeskills.length; i++) {
-        if (usedata.activeskills[i] != null) {
-          y = canvasTextAutoLine(usedata.activeskills[i].name + '(' + tempman.wuxing[usedata.activeskills[i].wuxing] + ')', canvas, x + dx, y, dy)
+      for (var i = 0; i < usedata.limit_activeskills.length; i++) {
+        if (usedata.limit_activeskills[i] != null) {
+          y = canvasTextAutoLine(usedata.limit_activeskills[i].name + '(' + tempman.wuxing[usedata.limit_activeskills[i].wuxing] + ')', canvas, x + dx, y, dy)
         }
       }
       y = canvasTextAutoLine("心法：", canvas, x, y, dy)
-      if (usedata.method == null) {
+      if (usedata.limit_method == null) {
         canvasTextAutoLine("无", canvas, x + dx, y, dy)
       } else {
-        var tmpstr = usedata.method.name + '('
-        for (var xf = 0; xf < usedata.method.wuxing.length; xf++) {
-          tmpstr += tempman.wuxing[usedata.method.wuxing[xf]]
+        var tmpstr = usedata.limit_method.name + '('
+        for (var xf = 0; xf < usedata.limit_method.wuxing.length; xf++) {
+          tmpstr += tempman.wuxing[usedata.limit_method.wuxing[xf]]
         }
         tmpstr += ')'
         canvasTextAutoLine(tmpstr, canvas, x + dx, y, dy)
@@ -366,8 +315,8 @@ export default class Main {
       var y = canvas.height / 5
       for (var i = 0; i < 4; i++) {
         var str = "[第" + (i + 1) + "个技能槽]"
-        if (usedata.activeskills[i] != null) {
-          str = usedata.activeskills[i].name + '(' + tempman.wuxing[usedata.activeskills[i].wuxing] + ')'
+        if (usedata.limit_activeskills[i] != null) {
+          str = usedata.limit_activeskills[i].name + '(' + tempman.wuxing[usedata.limit_activeskills[i].wuxing] + ')'
         }
         canvasTextCenter(str, canvas, tx, y + 3 * canvas.height / 50, tx)
         y = y + 3 * canvas.height / 25
@@ -376,12 +325,12 @@ export default class Main {
         ctx.lineTo(x * 7, y)
         ctx.stroke()
       }
-      if (usedata.method == null) {
+      if (usedata.limit_method == null) {
         canvasTextCenter("[心法槽]", canvas, tx, y + 3 * canvas.height / 50, tx)
       } else {
-        var tmpstr = usedata.method.name + '('
-        for (var xf = 0; xf < usedata.method.wuxing.length; xf++) {
-          tmpstr += tempman.wuxing[usedata.method.wuxing[xf]]
+        var tmpstr = usedata.limit_method.name + '('
+        for (var xf = 0; xf < usedata.limit_method.wuxing.length; xf++) {
+          tmpstr += tempman.wuxing[usedata.limit_method.wuxing[xf]]
         }
         tmpstr += ')'
         canvasTextCenter(tmpstr, canvas, tx, y + 3 * canvas.height / 50, tx)
@@ -391,12 +340,12 @@ export default class Main {
       // init
       this.skillshow = []
       var tmpbag = []
-      if (usedata.getdata('job') == 0) {
-        tmpbag = usedata.skillbag
+      if (usedata.getdata('limit_job') == 0) {
+        tmpbag = usedata.limit_skillbag
       } else {
-        for (var i = 0; i < usedata.skillbag.length; i++) {
-          if (usedata.getdata('job') == usedata.skillbag[i].job) {
-            tmpbag.push(usedata.skillbag[i])
+        for (var i = 0; i < usedata.limit_skillbag.length; i++) {
+          if (usedata.getdata('limit_job') == usedata.limit_skillbag[i].job) {
+            tmpbag.push(usedata.limit_skillbag[i])
           }
         }
       }
@@ -437,16 +386,16 @@ export default class Main {
     if (this.pop == 6) {
       // init
       this.methodshow = []
-      if (this.page > Math.ceil(usedata.methodbag.length / 4) - 1) {
-        this.page = Math.ceil(usedata.methodbag.length / 4) - 1
+      if (this.page > Math.ceil(usedata.limit_methodbag.length / 4) - 1) {
+        this.page = Math.ceil(usedata.limit_methodbag.length / 4) - 1
       }
       if (this.page < 0) {
         this.page = 0
       }
       var tmp = this.page * 4
-      for (var i = 0; i < usedata.methodbag.length; i++) {
+      for (var i = 0; i < usedata.limit_methodbag.length; i++) {
         if (tmp == 0) {
-          this.methodshow.push(usedata.methodbag[i])
+          this.methodshow.push(usedata.limit_methodbag[i])
         } else {
           tmp--
         }
@@ -488,26 +437,46 @@ export default class Main {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     // title name 
     y = canvasTextAutoLine(usedata.getdata('name'), canvas, tx, y, 20)
-    y = canvasTextAutoLine("职业：" + tempman.job[usedata.getdata('job')].name, canvas, tx, y, 20)
+    y = canvasTextAutoLine("职业：" + tempman.job[usedata.getdata('limit_job')].name, canvas, tx, y, 20)
     // split
     canvasTextSplit(canvas, tx, y)
+    y += 20
+    // text
+    canvasTextCenter('第' + this.mapid + '层', canvas, 0, y, 0)
 
     // draw select
-    for (var key in this.selectpos) {
-      var tmppos = this.selectpos[key]
-      ctx.strokeStyle = "white";
-      ctx.moveTo(tmppos[0].x, tmppos[0].y)
-      ctx.lineTo(tmppos[1].x, tmppos[1].y)
-      ctx.moveTo(tmppos[0].x, tmppos[0].y)
-      ctx.lineTo(tmppos[2].x, tmppos[2].y)
-      ctx.moveTo(tmppos[3].x, tmppos[3].y)
-      ctx.lineTo(tmppos[1].x, tmppos[1].y)
-      ctx.moveTo(tmppos[3].x, tmppos[3].y)
-      ctx.lineTo(tmppos[2].x, tmppos[2].y)
-      ctx.stroke();
-    }
-    for (var i = 0; i < this.selectbar.length; i++) {
-      canvasTextCenter(this.selectbar[i].name, canvas, 0, this.selectbar[i].y, 0)
+    if (this.finish == false) {
+      for (var key = 0; key < 3; key++) {
+        var tmppos = this.selectpos[key]
+        ctx.strokeStyle = "white";
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.stroke();
+        canvasTextCenter('123', canvas, 0, this.selectbar[key].y, 0)
+      }
+    } else {
+      for (var key = 0; key < 2; key++) {
+        var tmppos = this.selectpos[key]
+        ctx.strokeStyle = "white";
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[0].x, tmppos[0].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[1].x, tmppos[1].y)
+        ctx.moveTo(tmppos[3].x, tmppos[3].y)
+        ctx.lineTo(tmppos[2].x, tmppos[2].y)
+        ctx.stroke();
+      }
+      for (var i = 0; i < 2; i++) {
+        canvasTextCenter(tempman.map[this.mapid].choose[i].des, canvas, 0, this.selectbar[i].y, 0)
+      }
     }
 
     // bottom
@@ -546,4 +515,5 @@ export default class Main {
       )
     }
   }
+
 }

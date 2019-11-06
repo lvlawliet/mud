@@ -21,7 +21,7 @@ export default class actorimp {
       this.bili = e.property['bili']
       this.dingli = e.property['dingli']
       this.gengu = e.property['gengu']
-      this.hpbase = 4000
+      this.hpbase = 3000
       this.activeskills = []
       this.wuxing = [0]
       for (var i = 0; i < e.activeskills.length; i++) {
