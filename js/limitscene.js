@@ -1,7 +1,8 @@
 import Template from './template/template'
 import DataBus from './template/databus'
-import BattleScene from './battlescene'
+import Limit_BattleScene from './limit_battlescene'
 import SceneManager from './scenemanager'
+import SkillBus from './template/skillbus'
 import {
   canvasTextAutoLine,
   canvasTextRight,
@@ -15,6 +16,7 @@ let tempman = new Template()
 let tx = canvas.width * 1 / 12
 let ty = (canvas.height - 310) / 3
 let scenemanager = new SceneManager()
+let skilldata = new SkillBus()
 
 export default class LimitScene {
   constructor(mapid, e = false) {
@@ -130,6 +132,8 @@ export default class LimitScene {
     this.methodshow = []
     this.finish = e
     this.mapid = mapid
+    this.npcid = this.getnpcid()
+    this.choose = this.getchooselist()
 
     this.restart = function(mapid, e = false) {
       this.x = 0
@@ -141,6 +145,8 @@ export default class LimitScene {
       this.methodshow = []
       this.finish = e
       this.mapid = mapid
+      this.npcid = this.getnpcid()
+      this.choose = this.getchooselist()
       window.requestAnimationFrame(
         this.bindLoop,
         canvas
@@ -176,7 +182,27 @@ export default class LimitScene {
         for (var key in this.selectpos) {
           var tmpselect = this.selectpos[key]
           if (x > tmpselect[0].x && y > tmpselect[0].y && x < tmpselect[3].x && y < tmpselect[3].y) {
-
+            if (this.finish == false) {
+              scenemanager.stoplimit()
+              if (scenemanager.haslimitballtescene()) {
+                scenemanager.restartlimitballtescene(this.npcid[key])
+              } else {
+                var p = new Limit_BattleScene(this.npcid[key])
+                scenemanager.addlimitballtescene(p)
+              }
+            } else {
+              var choose = this.choose[key]
+              if (choose.type == 'skill') {
+                usedata.savelimit_skillbag([choose.id])
+              } else {
+                usedata.savelimit_methodbag([choose.id])
+              }
+              this.mapid++
+              usedata.mapid = this.mapid
+              this.finish = false
+              this.npcid = this.getnpcid()
+              this.choose = this.getchooselist()
+            }
           }
         }
         for (var i = 0; i < this.operatebarpos.length; i++) {
@@ -458,10 +484,10 @@ export default class LimitScene {
         ctx.moveTo(tmppos[3].x, tmppos[3].y)
         ctx.lineTo(tmppos[2].x, tmppos[2].y)
         ctx.stroke();
-        canvasTextCenter('123', canvas, 0, this.selectbar[key].y, 0)
+        canvasTextCenter(tempman.npc[this.npcid[key]].name, canvas, 0, this.selectbar[key].y, 0)
       }
     } else {
-      for (var key = 0; key < 2; key++) {
+      for (var key = 0; key < 3; key++) {
         var tmppos = this.selectpos[key]
         ctx.strokeStyle = "white";
         ctx.moveTo(tmppos[0].x, tmppos[0].y)
@@ -474,8 +500,12 @@ export default class LimitScene {
         ctx.lineTo(tmppos[2].x, tmppos[2].y)
         ctx.stroke();
       }
-      for (var i = 0; i < 2; i++) {
-        canvasTextCenter(tempman.map[this.mapid].choose[i].des, canvas, 0, this.selectbar[i].y, 0)
+      for (var i = 0; i < 3; i++) {
+        if (this.choose[i].type == 'skill') {
+          canvasTextCenter(skilldata.skills[this.choose[i].id].name + '(技)', canvas, 0, this.selectbar[i].y, 0)
+        } else {
+          canvasTextCenter(tempman.methods[this.choose[i].id].name + '(心)', canvas, 0, this.selectbar[i].y, 0)
+        }
       }
     }
 
@@ -514,6 +544,33 @@ export default class LimitScene {
         canvas
       )
     }
+  }
+
+  getnpcid() {
+    var list = [2, 2, 2]
+    var nlist = tempman.limit[this.mapid].npc
+    for (var t = 0; t < 3; t++) {
+      var idx = Math.floor(Math.random() * nlist.length)
+      list[t] = nlist[idx]
+    }
+    return list
+  }
+
+  getchooselist() {
+    var methods = Math.floor(Math.random() * 2)
+    var skills = 3 - methods
+    var list = []
+    var slist = tempman.limit[this.mapid].dropskill
+    var mlist = tempman.limit[this.mapid].dropmethod
+    for (var i = 0; i < skills; i++) {
+      var idx = Math.floor(Math.random() * slist.length)
+      list.push({type: 'skill', id: slist[idx]})
+    }
+    for (var i = 0; i < methods; i++) {
+      var idx = Math.floor(Math.random() * mlist.length)
+      list.push({ type: 'method', id: mlist[idx] })
+    }
+    return list
   }
 
 }

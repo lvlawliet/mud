@@ -297,12 +297,12 @@ export default class Template {
         id: 1000,
         name: '玄武魄·孙甲鱼',
         job: 100,
-        tizhi: 70,
-        shenfa: 0,
-        bili: 10,
+        tizhi: 30,
+        shenfa: 10,
+        bili: 20,
         dingli: 20,
         gengu: 20,
-        hpbase: 2500,
+        hpbase: 1000,
         activeskills: [1002, 1003, 1004],
         passiveskills: [],
         ai: "jiayu",
@@ -344,6 +344,22 @@ export default class Template {
           type: 'skill',
           id: 213
         }, ],
+      },
+      1002: {
+        id: 1002,
+        name: '苍鹰魄·咕咕月(真)',
+        job: 3,
+        tizhi: 20,
+        shenfa: 30,
+        bili: 35,
+        dingli: 5,
+        gengu: 0,
+        hpbase: 2500,
+        activeskills: [205, 206, 207, 208],
+        passiveskills: [209, 10000],
+        ai: "guguyue",
+        wuxing: [5],
+        drop: [],
       }
     }
 
@@ -434,6 +450,135 @@ export default class Template {
             value: 300
           }, ]
         }]
+      },
+    }
+
+    this.limit = {
+      1: {
+        id: 1,
+        npc: [2],
+        dropskill: [1, 101, 200, 205, 210],
+        dropmethod: [1, 2]
+      },
+      2: {
+        id: 2,
+        npc: [2],
+        dropskill: [1, 101, 200, 205, 210],
+        dropmethod: [1, 2]
+      },
+      3: {
+        id: 3,
+        npc: [2],
+        dropskill: [1, 101, 200, 205, 210],
+        dropmethod: [1, 2]
+      },
+      4: {
+        id: 4,
+        npc: [2, 3],
+        dropskill: [1, 101, 200, 205, 210, 2, 102, 201, 206, 211],
+        dropmethod: [1, 2]
+      },
+      5: {
+        id: 5,
+        npc: [2, 3],
+        dropskill: [1, 101, 200, 205, 210, 2, 102, 201, 206, 211],
+        dropmethod: [1, 2]
+      },
+      6: {
+        id: 6,
+        npc: [2, 3],
+        dropskill: [1, 101, 200, 205, 210, 2, 102, 201, 206, 211],
+        dropmethod: [1, 2]
+      },
+      7: {
+        id: 7,
+        npc: [3],
+        dropskill: [2, 102, 201, 206, 211],
+        dropmethod: [1, 2]
+      },
+      8: {
+        id: 8,
+        npc: [3],
+        dropskill: [2, 102, 201, 206, 211],
+        dropmethod: [1, 2]
+      },
+      9: {
+        id: 9,
+        npc: [3, 4],
+        dropskill: [2, 102, 201, 206, 211, 3, 103, 202, 207, 212],
+        dropmethod: [1, 2, 3, 4, 5]
+      },
+      10: {
+        id: 10,
+        npc: [3, 4],
+        dropskill: [2, 102, 201, 206, 211, 3, 103, 202, 207, 212],
+        dropmethod: [1, 2, 3, 4, 5]
+      },
+      11: {
+        id: 11,
+        npc: [3, 4],
+        dropskill: [2, 102, 201, 206, 211, 3, 103, 202, 207, 212],
+        dropmethod: [1, 2, 3, 4, 5]
+      },
+      12: {
+        id: 12,
+        npc: [4],
+        dropskill: [3, 103, 202, 207, 212],
+        dropmethod: [3, 4, 5]
+      },
+      13: {
+        id: 13,
+        npc: [4],
+        dropskill: [3, 103, 202, 207, 212],
+        dropmethod: [3, 4, 5]
+      },
+      14: {
+        id: 14,
+        npc: [4],
+        dropskill: [3, 103, 202, 207, 212],
+        dropmethod: [3, 4, 5]
+      },
+      15: {
+        id: 15,
+        npc: [4, 1000],
+        dropskill: [3, 103, 202, 207, 212, 4, 104, 203, 208, 213],
+        dropmethod: [1, 2, 3, 4, 5]
+      },
+      16: {
+        id: 16,
+        npc: [4, 1000],
+        dropskill: [3, 103, 202, 207, 212, 4, 104, 203, 208, 213],
+        dropmethod: [1, 2, 3, 4, 5]
+      },
+      17: {
+        id: 17,
+        npc: [1000],
+        dropskill: [4, 104, 203, 208, 213],
+        dropmethod: [3, 4, 5]
+      },
+      18: {
+        id: 18,
+        npc: [1000, 1001],
+        dropskill: [4, 104, 203, 208, 213],
+        dropmethod: [3, 4, 5]
+      },
+      19: {
+        id: 19,
+        npc: [1001],
+        dropskill: [4, 104, 203, 208, 213],
+        dropmethod: [3, 4, 5]
+      },
+      20: {
+        id: 20,
+        npc: [1001],
+        dropskill: [4, 104, 203, 208, 213],
+        dropmethod: [3, 4, 5]
+      },
+      21: {
+        id: 21,
+        npc: [1002],
+        dropskill: [4, 104, 203, 208, 213],
+        dropmethod: [3, 4, 5]
       },
     }
   }

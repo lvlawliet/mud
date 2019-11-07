@@ -11,7 +11,7 @@ let br = new BuffRegister()
 let rs = new SkillRegister()
 
 export default class actorimp {
-  constructor(type, e) {
+  constructor(type, e, limit = false) {
     if (type == 0) { // player
       this.name = e.name
       this.id = -1
@@ -23,7 +23,7 @@ export default class actorimp {
       this.gengu = e.property['gengu']
       this.hpbase = 3000
       this.activeskills = []
-      this.wuxing = [0]
+      this.wuxing = e.wuxing
       for (var i = 0; i < e.activeskills.length; i++) {
         if (e.activeskills[i] != null) {
           this.activeskills.push(e.activeskills[i])
@@ -33,6 +33,22 @@ export default class actorimp {
         this.activeskills.push(skilldata.skills[0])
       }
       this.passiveskills = e.passiveskills
+      // limit
+      if (limit == true) {
+        this.job = e.limit_job
+        this.activeskills = []
+        this.limit_wuxing = e.limit_wuxing
+        for (var i = 0; i < e.limit_activeskills.length; i++) {
+          if (e.limit_activeskills[i] != null) {
+            this.activeskills.push(e.limit_activeskills[i])
+          }
+        }
+        if (this.activeskills.length == 0) {
+          this.activeskills.push(skilldata.skills[0])
+        }
+        this.passiveskills = e.limit_passiveskills
+
+      }
     } else if (type == 1) { // npc
       this.name = e.name
       this.id = e.id

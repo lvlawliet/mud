@@ -117,4 +117,20 @@ export default class SceneManager {
     this.scene['limit'].stop()
   }
 
+  // limit_battle
+  addlimitballtescene(e) {
+    this.scene['limitballtescene'] = e
+  }
+
+  haslimitballtescene() {
+    return this.scene.hasOwnProperty('limitballtescene')
+  }
+
+  restartlimitballtescene(e) {
+    this.scene['limitballtescene'].restart(e)
+  }
+
+  stoplimitballtescene() {
+    this.scene['limitballtescene'].stop()
+  }
 }

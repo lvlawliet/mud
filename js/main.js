@@ -194,9 +194,9 @@ export default class Main {
             if (key == 0) {
               scenemanager.stopmain()
               if (scenemanager.hasballtescene()) {
-                scenemanager.restartballtescene(2)
+                scenemanager.restartballtescene(1000)
               } else {
-                var p = new BattleScene(2)
+                var p = new BattleScene(1000)
                 scenemanager.addballtescene(p)
               }
               /*
@@ -220,6 +220,7 @@ export default class Main {
             if (key == 2) {
               usedata.local = 'limit'
               usedata.mapid = 1
+              usedata.resetlimit()
               scenemanager.stopmain()
               if (scenemanager.haslimit()) {
                 scenemanager.restartlimit(1)

@@ -88,8 +88,9 @@ export default class CreateRole {
     if (x > tmpx - 10 && x < tmpx + canvas.width / 2 - 45 && y > tmpy - 30 && y < tmpy + 30) {
       usedata.savejob(0)
       usedata.savelimit_job(0)
-      usedata.savelimit_skillbag([200, 201, 202, 203, 205, 206, 207, 208, 210, 211, 212, 213, 9999])
-      usedata.savelimit_methodbag([0, 3, 4, 5, ])
+      //usedata.savelimit_skillbag([200, 201, 202, 203, 205, 206, 207, 208, 210, 211, 212, 213, 9999])
+      //usedata.savelimit_methodbag([0, 3, 4, 5, ])
+      usedata.savelimit_methodbag([0])
       usedata.savemethodbag([0])
       flag = true
     }

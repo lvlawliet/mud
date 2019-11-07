@@ -198,6 +198,7 @@ export default class DataBus {
       }
       this.method = e
       this.job = e.job
+      this.wuxing = e.wuxing
     }
   }
   
@@ -263,7 +264,19 @@ export default class DataBus {
       }
       this.limit_method = e
       this.limit_job = e.job
+      this.limit_wuxing = e.wuxing
     }
+  }
+
+  resetlimit() {
+    this.limit_job = 0
+    this.limit_activeskills = [null, null, null, null]
+    this.limit_passiveskills = []
+    this.limit_method = null
+    this.limit_skillbag = []
+    this.limit_methodbag = []
+    this.savelimit_methodbag([0])
+    this.limit_wuxing = [0]
   }
   // end
 }
